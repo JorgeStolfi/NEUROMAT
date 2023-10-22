@@ -1,0 +1,19 @@
+# Last edited on 2019-05-28 16:21:49 by jstolfi
+
+# To be included in other gnuplot programs
+# Assumes gnuplot variables 
+#   {hpx,vpx} size of plot (pixels) before shrinking.
+#   {tmin,tmax} time range to plot.
+#   {tfile} output file name (string).
+#   {nnum} number of neuron (string).
+#   {vars} names of variables in plot (string).
+
+  set terminal png truecolor size (hpx),(vpx) font "arial,18"
+  set output (tfile)
+  set lmargin 8; set rmargin 8
+  set xrange [((tmin)-0.5):((tmax)+0.5)]
+  set xzeroaxis 
+  set yzeroaxis
+  set key bottom left
+  set grid ytics lt 0
+  set title ("Neuron " . (nnum) . " - " . (vars))

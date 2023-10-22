@@ -1,0 +1,460 @@
+Scenario - treino
+Logfile written - 11/01/07 19:11:13
+
+Trial	Event Type	Code	Time	TTime	Uncertainty	Duration	Uncertainty	ReqTime	ReqDur
+
+12	Nothing	Bio	21240	0	2			0
+43	Nothing	pulso	38000	0	1			0
+84	Nothing	pulso	59720	0	1			0
+107	Nothing	Bio	71714	0	1			0
+112	Nothing	nonBio	112738	0	2			0
+143	Nothing	pulso	129458	0	1			0
+184	Nothing	pulso	151227	0	1			0
+207	Nothing	nonBio	163221	0	1			0
+212	Nothing	Bio	204247	0	2			0
+243	Nothing	pulso	220967	0	1			0
+284	Nothing	pulso	242741	0	1			0
+307	Nothing	Bio	254732	0	2			0
+312	Nothing	nonBio	295756	0	2			0
+343	Nothing	pulso	312478	0	1			0
+384	Nothing	pulso	334247	0	1			0
+407	Nothing	nonBio	346181	0	1			0
+412	Nothing	nonBio	387208	0	1			0
+443	Nothing	pulso	403927	0	1			0
+484	Nothing	pulso	425693	0	1			0
+507	Nothing	nonBio	437680	0	2			0
+512	Nothing	Bio	478705	0	1			0
+543	Nothing	pulso	495433	0	1			0
+584	Nothing	pulso	517201	0	1			0
+607	Nothing	Bio	529189	0	1			0
+612	Nothing	nonBio	570214	0	2			0
+643	Nothing	pulso	586939	0	1			0
+684	Nothing	pulso	608708	0	1			0
+707	Nothing	nonBio	620649	0	1			0
+712	Nothing	nonBio	661674	0	1			0
+743	Nothing	pulso	678441	0	1			0
+784	Nothing	pulso	700162	0	1			0
+807	Nothing	nonBio	712149	0	1			0
+812	Nothing	nonBio	753175	0	2			0
+843	Nothing	pulso	769894	0	1			0
+884	Nothing	pulso	791669	0	1			0
+907	Nothing	nonBio	803661	0	1			0
+912	Nothing	nonBio	844689	0	1			0
+943	Nothing	pulso	861418	0	1			0
+984	Nothing	pulso	883218	0	1			0
+1007	Nothing	nonBio	895203	0	1			0
+1012	Nothing	Bio	936226	0	1			0
+1043	Nothing	pulso	952949	0	1			0
+1084	Nothing	pulso	974733	0	1			0
+1107	Nothing	Bio	986721	0	1			0
+1112	Nothing	Bio	1027746	0	1			0
+1143	Nothing	pulso	1044466	0	1			0
+1184	Nothing	pulso	1066241	0	1			0
+1207	Nothing	Bio	1078229	0	1			0
+1212	Nothing	Bio	1119250	0	1			0
+1243	Nothing	pulso	1135968	0	1			0
+1284	Nothing	pulso	1157742	0	1			0
+1307	Nothing	Bio	1169684	0	1			0
+1312	Nothing	nonBio	1210708	0	1			0
+1343	Nothing	pulso	1227426	0	1			0
+1384	Nothing	pulso	1249196	0	1			0
+1407	Nothing	nonBio	1261182	0	1			0
+1412	Nothing	Bio	1302210	0	1			0
+1443	Nothing	pulso	1318930	0	1			0
+1484	Nothing	pulso	1340702	0	1			0
+1507	Nothing	Bio	1352690	0	1			0
+1512	Nothing	nonBio	1393716	0	2			0
+1543	Nothing	pulso	1410435	0	1			0
+1584	Nothing	pulso	1432204	0	1			0
+1607	Nothing	nonBio	1444137	0	1			0
+1612	Nothing	Bio	1485162	0	1			0
+1643	Nothing	pulso	1501883	0	1			0
+1684	Nothing	pulso	1523653	0	1			0
+1707	Nothing	Bio	1535644	0	1			0
+1712	Nothing	nonBio	1576670	0	1			0
+1743	Nothing	pulso	1593392	0	1			0
+1784	Nothing	pulso	1615170	0	1			0
+1807	Nothing	nonBio	1627169	0	1			0
+1812	Nothing	nonBio	1668194	0	2			0
+1843	Nothing	pulso	1684913	0	1			0
+1884	Nothing	pulso	1706689	0	1			0
+1907	Nothing	nonBio	1718681	0	1			0
+1912	Nothing	Bio	1759705	0	1			0
+1943	Nothing	pulso	1776432	0	1			0
+1984	Nothing	pulso	1798230	0	1			0
+2007	Nothing	Bio	1810222	0	1			0
+2012	Nothing	Bio	1851249	0	1			0
+2043	Nothing	pulso	1867968	0	1			0
+2084	Nothing	pulso	1889742	0	1			0
+2107	Nothing	Bio	1901729	0	2			0
+2112	Nothing	Bio	1942752	0	2			0
+2143	Nothing	pulso	1959481	0	1			0
+2184	Nothing	pulso	1981249	0	1			0
+2207	Nothing	Bio	1993192	0	1			0
+2212	Nothing	Bio	2034215	0	2			0
+2243	Nothing	pulso	2050988	0	1			0
+2284	Nothing	pulso	2072707	0	1			0
+2307	Nothing	Bio	2084701	0	1			0
+2312	Nothing	nonBio	2125725	0	1			0
+2343	Nothing	pulso	2142447	0	1			0
+2384	Nothing	pulso	2164221	0	1			0
+2407	Nothing	nonBio	2176214	0	1			0
+2412	Nothing	nonBio	2217238	0	1			0
+2443	Nothing	pulso	2233958	0	1			0
+2484	Nothing	pulso	2255729	0	1			0
+2507	Nothing	nonBio	2267721	0	1			0
+2512	Nothing	Bio	2308745	0	1			0
+2543	Nothing	pulso	2325472	0	1			0
+2584	Nothing	pulso	2347246	0	1			0
+2607	Nothing	Bio	2359245	0	1			0
+2612	Nothing	Bio	2400269	0	1			0
+2643	Nothing	pulso	2416990	0	1			0
+2684	Nothing	pulso	2438765	0	1			0
+2707	Nothing	Bio	2450705	0	1			0
+2712	Nothing	Bio	2491729	0	1			0
+2743	Nothing	pulso	2508503	0	1			0
+2784	Nothing	pulso	2530226	0	1			0
+2807	Nothing	Bio	2542210	0	2			0
+2812	Nothing	Bio	2583233	0	2			0
+2843	Nothing	pulso	2599958	0	1			0
+2884	Nothing	pulso	2621738	0	1			0
+2907	Nothing	Bio	2633732	0	1			0
+2912	Nothing	Bio	2674756	0	1			0
+2943	Nothing	pulso	2691474	0	1			0
+2984	Nothing	pulso	2713261	0	1			0
+3007	Nothing	Bio	2725253	0	2			0
+3012	Nothing	nonBio	2766277	0	1			0
+3043	Nothing	pulso	2782998	0	1			0
+3084	Nothing	pulso	2804767	0	1			0
+3107	Nothing	nonBio	2816722	0	1			0
+3112	Nothing	Bio	2857746	0	1			0
+3143	Nothing	pulso	2874489	0	1			0
+3184	Nothing	pulso	2896269	0	1			0
+3207	Nothing	Bio	2908207	0	1			0
+3212	Nothing	nonBio	2949232	0	1			0
+3243	Nothing	pulso	2965947	0	1			0
+3284	Nothing	pulso	2987718	0	1			0
+3307	Nothing	nonBio	2999709	0	1			0
+3312	Nothing	nonBio	3040732	0	2			0
+3343	Nothing	pulso	3057456	0	1			0
+3384	Nothing	pulso	3079228	0	1			0
+3407	Nothing	nonBio	3091217	0	1			0
+3412	Nothing	Bio	3132241	0	2			0
+3443	Nothing	pulso	3148962	0	1			0
+3484	Nothing	pulso	3170725	0	1			0
+3507	Nothing	Bio	3182664	0	1			0
+3512	Nothing	Bio	3223690	0	1			0
+3543	Nothing	pulso	3240398	0	1			0
+3584	Nothing	pulso	3262183	0	1			0
+3607	Nothing	Bio	3274176	0	2			0
+3612	Nothing	nonBio	3315201	0	1			0
+3643	Nothing	pulso	3331923	0	1			0
+3684	Nothing	pulso	3353689	0	1			0
+3707	Nothing	nonBio	3365678	0	1			0
+3712	Nothing	nonBio	3406705	0	2			0
+3743	Nothing	pulso	3423422	0	1			0
+3784	Nothing	pulso	3445192	0	1			0
+3807	Nothing	nonBio	3457119	0	1			0
+3812	Nothing	Bio	3498146	0	1			0
+3843	Nothing	pulso	3514862	0	1			0
+3884	Nothing	pulso	3536646	0	1			0
+3907	Nothing	Bio	3548633	0	2			0
+3912	Nothing	nonBio	3589657	0	1			0
+3943	Nothing	pulso	3606376	0	1			0
+3984	Nothing	pulso	3628123	0	1			0
+4007	Nothing	nonBio	3640057	0	1			0
+4012	Nothing	Bio	3681082	0	1			0
+4043	Nothing	pulso	3697862	0	1			0
+4084	Nothing	pulso	3719647	0	1			0
+4107	Nothing	Bio	3731588	0	1			0
+4112	Nothing	nonBio	3772615	0	1			0
+4143	Nothing	pulso	3789341	0	1			0
+4184	Nothing	pulso	3811101	0	1			0
+4207	Nothing	nonBio	3823087	0	1			0
+4212	Nothing	Bio	3864109	0	1			0
+4243	Nothing	pulso	3880829	0	1			0
+4284	Nothing	pulso	3902597	0	1			0
+4307	Nothing	Bio	3914590	0	2			0
+4312	Nothing	nonBio	3955614	0	1			0
+4343	Nothing	pulso	3972335	0	1			0
+4384	Nothing	pulso	3994103	0	1			0
+4407	Nothing	nonBio	4006036	0	1			0
+4412	Nothing	nonBio	4047062	0	2			0
+4443	Nothing	pulso	4063783	0	1			0
+4484	Nothing	pulso	4085545	0	1			0
+4507	Nothing	nonBio	4097538	0	1			0
+4512	Nothing	Bio	4138561	0	1			0
+4543	Nothing	pulso	4155283	0	1			0
+4584	Nothing	pulso	4177058	0	1			0
+4607	Nothing	Bio	4189045	0	1			0
+4612	Nothing	nonBio	4230070	0	1			0
+4643	Nothing	pulso	4246785	0	1			0
+4684	Nothing	pulso	4268554	0	1			0
+4707	Nothing	nonBio	4280493	0	1			0
+4712	Nothing	Bio	4321518	0	1			0
+4743	Nothing	pulso	4338298	0	1			0
+4784	Nothing	pulso	4360008	0	1			0
+4807	Nothing	Bio	4372005	0	1			0
+4812	Nothing	nonBio	4413030	0	1			0
+4843	Nothing	pulso	4429750	0	1			0
+4884	Nothing	pulso	4451519	0	1			0
+4907	Nothing	nonBio	4463436	0	1			0
+4912	Nothing	nonBio	4504460	0	1			0
+4943	Nothing	pulso	4521224	0	1			0
+4984	Nothing	pulso	4542944	0	1			0
+5007	Nothing	nonBio	4554932	0	2			0
+
+
+Event Type	Code	Type	Response	RT	RT Uncertainty	Time	Uncertainty	Duration	Uncertainty	ReqTime	ReqDur
+
+Picture		miss				-8770	1	30551	3	0	next
+Nothing	Bio	miss				21240	2			0
+Nothing	pulso	miss				38000	1			0
+Nothing	pulso	miss				59720	1			0
+Nothing	Bio	miss				71714	1			0
+Picture		miss				102728	1	10551	2	0	next
+Nothing	nonBio	miss				112738	2			0
+Nothing	pulso	miss				129458	1			0
+Nothing	pulso	miss				151227	1			0
+Nothing	nonBio	miss				163221	1			0
+Picture		miss				194234	1	10554	3	0	next
+Nothing	Bio	miss				204247	2			0
+Nothing	pulso	miss				220967	1			0
+Nothing	pulso	miss				242741	1			0
+Nothing	Bio	miss				254732	2			0
+Picture		miss				285746	1	10551	2	0	next
+Nothing	nonBio	miss				295756	2			0
+Nothing	pulso	miss				312478	1			0
+Nothing	pulso	miss				334247	1			0
+Nothing	nonBio	miss				346181	1			0
+Picture		miss				377194	1	10555	2	0	next
+Nothing	nonBio	miss				387208	1			0
+Nothing	pulso	miss				403927	1			0
+Nothing	pulso	miss				425693	1			0
+Nothing	nonBio	miss				437680	2			0
+Picture		miss				468693	1	10553	2	0	next
+Nothing	Bio	miss				478705	1			0
+Nothing	pulso	miss				495433	1			0
+Nothing	pulso	miss				517201	1			0
+Nothing	Bio	miss				529189	1			0
+Picture		miss				560202	1	10553	3	0	next
+Nothing	nonBio	miss				570214	2			0
+Nothing	pulso	miss				586939	1			0
+Nothing	pulso	miss				608708	1			0
+Nothing	nonBio	miss				620649	1			0
+Picture		miss				651662	1	10553	3	0	next
+Nothing	nonBio	miss				661674	1			0
+Nothing	pulso	miss				678441	1			0
+Nothing	pulso	miss				700162	1			0
+Nothing	nonBio	miss				712149	1			0
+Picture		miss				743162	1	10554	3	0	next
+Nothing	nonBio	miss				753175	2			0
+Nothing	pulso	miss				769894	1			0
+Nothing	pulso	miss				791669	1			0
+Nothing	nonBio	miss				803661	1			0
+Picture		miss				834674	1	10556	2	0	next
+Nothing	nonBio	miss				844689	1			0
+Nothing	pulso	miss				861418	1			0
+Nothing	pulso	miss				883218	1			0
+Nothing	nonBio	miss				895203	1			0
+Picture		miss				926215	1	10552	2	0	next
+Nothing	Bio	miss				936226	1			0
+Nothing	pulso	miss				952949	1			0
+Nothing	pulso	miss				974733	1			0
+Nothing	Bio	miss				986721	1			0
+Picture		miss				1017734	1	10553	2	0	next
+Nothing	Bio	miss				1027746	1			0
+Nothing	pulso	miss				1044466	1			0
+Nothing	pulso	miss				1066241	1			0
+Nothing	Bio	miss				1078229	1			0
+Picture		miss				1109240	2	10551	3	0	next
+Nothing	Bio	miss				1119250	1			0
+Nothing	pulso	miss				1135968	1			0
+Nothing	pulso	miss				1157742	1			0
+Nothing	Bio	miss				1169684	1			0
+Picture		miss				1200697	1	10552	2	0	next
+Nothing	nonBio	miss				1210708	1			0
+Nothing	pulso	miss				1227426	1			0
+Nothing	pulso	miss				1249196	1			0
+Nothing	nonBio	miss				1261182	1			0
+Picture		miss				1292195	1	10556	2	0	next
+Nothing	Bio	miss				1302210	1			0
+Nothing	pulso	miss				1318930	1			0
+Nothing	pulso	miss				1340702	1			0
+Nothing	Bio	miss				1352690	1			0
+Picture		miss				1383703	1	10554	2	0	next
+Nothing	nonBio	miss				1393716	2			0
+Nothing	pulso	miss				1410435	1			0
+Nothing	pulso	miss				1432204	1			0
+Nothing	nonBio	miss				1444137	1			0
+Picture		miss				1475149	1	10554	2	0	next
+Nothing	Bio	miss				1485162	1			0
+Nothing	pulso	miss				1501883	1			0
+Nothing	pulso	miss				1523653	1			0
+Nothing	Bio	miss				1535644	1			0
+Picture		miss				1566657	1	10554	2	0	next
+Nothing	nonBio	miss				1576670	1			0
+Nothing	pulso	miss				1593392	1			0
+Nothing	pulso	miss				1615170	1			0
+Nothing	nonBio	miss				1627169	1			0
+Picture		miss				1658182	1	10554	2	0	next
+Nothing	nonBio	miss				1668194	2			0
+Nothing	pulso	miss				1684913	1			0
+Nothing	pulso	miss				1706689	1			0
+Nothing	nonBio	miss				1718681	1			0
+Picture		miss				1749694	1	10552	2	0	next
+Nothing	Bio	miss				1759705	1			0
+Nothing	pulso	miss				1776432	1			0
+Nothing	pulso	miss				1798230	1			0
+Nothing	Bio	miss				1810222	1			0
+Picture		miss				1841235	1	10555	2	0	next
+Nothing	Bio	miss				1851249	1			0
+Nothing	pulso	miss				1867968	1			0
+Nothing	pulso	miss				1889742	1			0
+Nothing	Bio	miss				1901729	2			0
+Picture		miss				1932741	1	10552	2	0	next
+Nothing	Bio	miss				1942752	2			0
+Nothing	pulso	miss				1959481	1			0
+Nothing	pulso	miss				1981249	1			0
+Nothing	Bio	miss				1993192	1			0
+Picture		miss				2024205	1	10551	2	0	next
+Nothing	Bio	miss				2034215	2			0
+Nothing	pulso	miss				2050988	1			0
+Nothing	pulso	miss				2072707	1			0
+Nothing	Bio	miss				2084701	1			0
+Picture		miss				2115714	1	10552	2	0	next
+Nothing	nonBio	miss				2125725	1			0
+Nothing	pulso	miss				2142447	1			0
+Nothing	pulso	miss				2164221	1			0
+Nothing	nonBio	miss				2176214	1			0
+Picture		miss				2207227	1	10552	2	0	next
+Nothing	nonBio	miss				2217238	1			0
+Nothing	pulso	miss				2233958	1			0
+Nothing	pulso	miss				2255729	1			0
+Nothing	nonBio	miss				2267721	1			0
+Picture		miss				2298734	1	10552	2	0	next
+Nothing	Bio	miss				2308745	1			0
+Nothing	pulso	miss				2325472	1			0
+Nothing	pulso	miss				2347246	1			0
+Nothing	Bio	miss				2359245	1			0
+Picture		miss				2390256	1	10554	2	0	next
+Nothing	Bio	miss				2400269	1			0
+Nothing	pulso	miss				2416990	1			0
+Nothing	pulso	miss				2438765	1			0
+Nothing	Bio	miss				2450705	1			0
+Picture		miss				2481719	1	10551	2	0	next
+Nothing	Bio	miss				2491729	1			0
+Nothing	pulso	miss				2508503	1			0
+Nothing	pulso	miss				2530226	1			0
+Nothing	Bio	miss				2542210	2			0
+Picture		miss				2573223	1	10551	3	0	next
+Nothing	Bio	miss				2583233	2			0
+Nothing	pulso	miss				2599958	1			0
+Nothing	pulso	miss				2621738	1			0
+Nothing	Bio	miss				2633732	1			0
+Picture		miss				2664745	1	10552	2	0	next
+Nothing	Bio	miss				2674756	1			0
+Nothing	pulso	miss				2691474	1			0
+Nothing	pulso	miss				2713261	1			0
+Nothing	Bio	miss				2725253	2			0
+Picture		miss				2756266	1	10552	3	0	next
+Nothing	nonBio	miss				2766277	1			0
+Nothing	pulso	miss				2782998	1			0
+Nothing	pulso	miss				2804767	1			0
+Nothing	nonBio	miss				2816722	1			0
+Picture		miss				2847733	2	10554	3	0	next
+Nothing	Bio	miss				2857746	1			0
+Nothing	pulso	miss				2874489	1			0
+Nothing	pulso	miss				2896269	1			0
+Nothing	Bio	miss				2908207	1			0
+Picture		miss				2939220	1	10553	2	0	next
+Nothing	nonBio	miss				2949232	1			0
+Nothing	pulso	miss				2965947	1			0
+Nothing	pulso	miss				2987718	1			0
+Nothing	nonBio	miss				2999709	1			0
+Picture		miss				3030722	1	10551	2	0	next
+Nothing	nonBio	miss				3040732	2			0
+Nothing	pulso	miss				3057456	1			0
+Nothing	pulso	miss				3079228	1			0
+Nothing	nonBio	miss				3091217	1			0
+Picture		miss				3122229	1	10553	3	0	next
+Nothing	Bio	miss				3132241	2			0
+Nothing	pulso	miss				3148962	1			0
+Nothing	pulso	miss				3170725	1			0
+Nothing	Bio	miss				3182664	1			0
+Picture		miss				3213677	1	10554	2	0	next
+Nothing	Bio	miss				3223690	1			0
+Nothing	pulso	miss				3240398	1			0
+Nothing	pulso	miss				3262183	1			0
+Nothing	Bio	miss				3274176	2			0
+Picture		miss				3305189	1	10553	2	0	next
+Nothing	nonBio	miss				3315201	1			0
+Nothing	pulso	miss				3331923	1			0
+Nothing	pulso	miss				3353689	1			0
+Nothing	nonBio	miss				3365678	1			0
+Picture		miss				3396691	1	10555	2	0	next
+Nothing	nonBio	miss				3406705	2			0
+Nothing	pulso	miss				3423422	1			0
+Nothing	pulso	miss				3445192	1			0
+Nothing	nonBio	miss				3457119	1			0
+Picture		miss				3488133	1	10554	2	0	next
+Nothing	Bio	miss				3498146	1			0
+Nothing	pulso	miss				3514862	1			0
+Nothing	pulso	miss				3536646	1			0
+Nothing	Bio	miss				3548633	2			0
+Picture		miss				3579646	1	10552	2	0	next
+Nothing	nonBio	miss				3589657	1			0
+Nothing	pulso	miss				3606376	1			0
+Nothing	pulso	miss				3628123	1			0
+Nothing	nonBio	miss				3640057	1			0
+Picture		miss				3671070	1	10553	2	0	next
+Nothing	Bio	miss				3681082	1			0
+Nothing	pulso	miss				3697862	1			0
+Nothing	pulso	miss				3719647	1			0
+Nothing	Bio	miss				3731588	1			0
+Picture		miss				3762601	1	10555	2	0	next
+Nothing	nonBio	miss				3772615	1			0
+Nothing	pulso	miss				3789341	1			0
+Nothing	pulso	miss				3811101	1			0
+Nothing	nonBio	miss				3823087	1			0
+Picture		miss				3854098	2	10552	4	0	next
+Nothing	Bio	miss				3864109	1			0
+Nothing	pulso	miss				3880829	1			0
+Nothing	pulso	miss				3902597	1			0
+Nothing	Bio	miss				3914590	2			0
+Picture		miss				3945603	1	10552	2	0	next
+Nothing	nonBio	miss				3955614	1			0
+Nothing	pulso	miss				3972335	1			0
+Nothing	pulso	miss				3994103	1			0
+Nothing	nonBio	miss				4006036	1			0
+Picture		miss				4037049	1	10554	3	0	next
+Nothing	nonBio	miss				4047062	2			0
+Nothing	pulso	miss				4063783	1			0
+Nothing	pulso	miss				4085545	1			0
+Nothing	nonBio	miss				4097538	1			0
+Picture		miss				4128550	1	10552	2	0	next
+Nothing	Bio	miss				4138561	1			0
+Nothing	pulso	miss				4155283	1			0
+Nothing	pulso	miss				4177058	1			0
+Nothing	Bio	miss				4189045	1			0
+Picture		miss				4220058	1	10553	2	0	next
+Nothing	nonBio	miss				4230070	1			0
+Nothing	pulso	miss				4246785	1			0
+Nothing	pulso	miss				4268554	1			0
+Nothing	nonBio	miss				4280493	1			0
+Picture		miss				4311506	1	10553	2	0	next
+Nothing	Bio	miss				4321518	1			0
+Nothing	pulso	miss				4338298	1			0
+Nothing	pulso	miss				4360008	1			0
+Nothing	Bio	miss				4372005	1			0
+Picture		miss				4403017	2	10554	3	0	next
+Nothing	nonBio	miss				4413030	1			0
+Nothing	pulso	miss				4429750	1			0
+Nothing	pulso	miss				4451519	1			0
+Nothing	nonBio	miss				4463436	1			0
+Picture		miss				4494449	1	10552	3	0	next
+Nothing	nonBio	miss				4504460	1			0
+Nothing	pulso	miss				4521224	1			0
+Nothing	pulso	miss				4542944	1			0
+Nothing	nonBio	miss				4554932	2			0
+Picture		miss				4585945	1	15801	2	0	next

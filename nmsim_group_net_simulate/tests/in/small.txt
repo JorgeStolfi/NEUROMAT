@@ -1,0 +1,124 @@
+begin nmsim_elem_net (format of 2019-01-11)
+  begin nmsim_group_net (format of 2019-01-12)
+    begin nmsim_class_net (format of 2019-01-10)
+      neuron_classes = 2
+      class = 0
+      begin nmsim_class_neuron (format of 2019-01-08)
+        V_R = -40
+        V_B = -60
+        V_tau = 10
+        M_R = 0.75
+        M_tau = 3
+        H_R = 0.50
+        H_tau = 2
+        Phi_class = G
+        V_M = -30
+        V_D = +10
+      end nmsim_class_neuron
+      class = 1
+      begin nmsim_class_neuron (format of 2019-01-08)
+        V_R = -30
+        V_B = -60
+        V_tau = 10
+        M_R = 0.75
+        M_tau = 5
+        H_R = 0.50
+        H_tau = 3
+        Phi_class = G
+        V_M = -35
+        V_D = +10
+      end nmsim_class_neuron
+      synapse_classes = 3
+      class = 0
+      begin nmsim_class_synapse (format of 2019-01-10)
+        W_avg = -5
+        W_dev = 2.1
+      end nmsim_class_synapse
+      class = 1
+      begin nmsim_class_synapse (format of 2019-01-10)
+        W_avg = -9
+        W_dev = 3.6
+      end nmsim_class_synapse
+      class = 2
+      begin nmsim_class_synapse (format of 2019-01-10)
+        W_avg = -4
+        W_dev = 3
+      end nmsim_class_synapse
+    end nmsim_class_net
+    neuron_groups = 5
+    0 0 3
+    1 0 2
+    2 1 4
+    3 1 1
+    4 1 4
+    synapse_groups = 7
+    0 0  4 0  0.2
+    1 0  2 4  1.1
+    2 1  1 0  1.5
+    3 1  2 2  2.7
+    4 1  2 4  3.8
+    5 2  4 4  0.8
+    6 2  1 4  1.0
+  end nmsim_group_net
+  neuron_elems = 14
+  0 0
+  1 0
+  2 0
+  3 1
+  4 1
+  5 2
+  6 2
+  7 2
+  8 2
+  9 3
+  10 4
+  11 4
+  12 4
+  13 4
+  synapse_elems = 45
+  0 1  8 10  0
+  1 1  8 12  0
+  2 1  7 12  0
+  3 1  7 12  0
+  4 2  4 0  0
+  5 2  3 2  0
+  6 2  3 2  0
+  7 2  3 2  0
+  8 2  3 2  0
+  9 2  3 2  0
+  10 3  5 5  0
+  11 3  5 5  0
+  12 3  5 6  0
+  13 3  5 6  0
+  14 3  7 7  0
+  15 4  8 10  0
+  16 4  7 10  0
+  17 4  7 10  0
+  18 4  8 10  0
+  19 4  5 10  0
+  20 4  8 10  0
+  21 4  8 10  0
+  22 4  5 10  0
+  23 4  5 10  0
+  24 4  5 10  0
+  25 4  5 10  0
+  26 4  6 12  0
+  27 4  8 12  0
+  28 4  6 13  0
+  29 4  7 13  0
+  30 4  7 13  0
+  31 4  5 13  0
+  32 4  7 13  0
+  33 4  5 13  0
+  34 4  8 13  0
+  35 5  12 10  0
+  36 5  12 11  0
+  37 6  3 10  0
+  38 6  3 10  0
+  39 6  3 11  0
+  40 6  3 11  0
+  41 6  4 11  0
+  42 6  4 12  0
+  43 6  3 12  0
+  44 6  4 13  0
+end nmsim_elem_net

@@ -1,0 +1,4 @@
+# Last edited on 2016-05-28 08:52:57 by stolfilocal
+
+Draws the phase diagram for perceptron-like stochastic neurons
+(mu = 0, no delay).
