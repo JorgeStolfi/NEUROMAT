@@ -1,1 +1,0 @@
-../GENERIC-ROOT-DIR.make

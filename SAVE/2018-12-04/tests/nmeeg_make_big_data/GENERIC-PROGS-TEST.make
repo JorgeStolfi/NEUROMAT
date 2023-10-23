@@ -1,1 +1,0 @@
-../GENERIC-PROGS-TEST.make
