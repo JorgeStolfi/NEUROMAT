@@ -4,7 +4,7 @@
 
 #define nmeeg_comp_analysis_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
-/* Last edited on 2023-10-22 09:16:16 by stolfi */
+/* Last edited on 2023-10-23 15:37:13 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -40,16 +40,17 @@
   " frame, with the same {NE} electrode channels as the input file.\n" \
   "\n" \
   "  The program views the first {NE} channel values in each input data" \
-  " frame {V} as a vector in Cartesian space of dimension {NE}; and the" \
-  " first {NE} values in each pattern frame {PAT[k]} as a similar vector {P[k]}.  It" \
-  " will decompose each input vector {VI} into two components: a linear combination {VP} of" \
+  " frame {t} as a vector {V[t][*] = V[t][NE-1]} in Cartesian space of dimension {NE}; and the" \
+  " first {NE} values in each pattern file {PAT_FILE[k]} as a similar vector {P[k][*]}.  It" \
+  " will decompose each input vector {V[t][*]} into two components: a linear combination {VP[t} of" \
   " the pattern vectors\n" \
   "\n" \
-  "   {VP = C[0]*P[0] + C[1]*P[1] + ··· + C[NP-1]*P[NP-1]}\n" \
+  "   {VP[t][*] = C[t][0]*P[0][*] + C[t][1]*P[1][*] + ··· + C[t][NP-1]*P[NP-1][*]}\n" \
   "\n" \
   " where {C[0..NP-1]} are {NP} real coefficients; and a residual" \
-  " vector {VR} with {NE} elements, that is orthogonal" \
-  " to all vectors {P[0..NP-1]}.   The program will then concatenate the vectors {VR} and {C}" \
+  " vector {VR[t][*]} with {NE} elements, that is orthogonal" \
+  " to all vectors {P[0..NP-1]}.   The program will then concatenate the" \
+  " vectors {VR[t][0..NE-1]} and {C[t][0..NP-1}" \
   " into an output vector {VO} with {NE+NP} channels.\n" \
   "\n" \
   "  To this vector the program will finally append the original {NC-NE} marker" \
@@ -63,7 +64,7 @@
   " original dataset, as fitted in each frame frame.  Namely, each frame {VS} of such an output file" \
   " will be a linear combination of pattern frames\n" \
   "\n" \
-  "   {VS = C[K[0]]*P[K[0]] + C[K[1]]*P[K[1]] + ··· + C[K[M-1]]*P[K[M-1]]}\n" \
+  "   {VS[t][*] = C[t][K[0]]*P[K[0]][*] + C[t][K[1]]*P[K[1]][*] + ··· + C[t][K[M-1]]*P[K[M-1]][*]}\n" \
   "\n" \
   " where {K[0..M-1]} is some subset of the pattern indices {0..NP-1}.\n" \
   "\n" \
@@ -103,7 +104,7 @@
   "\n" \
   "  -writeCoeffs {COEFF_FILE}\n" \
   "    This optional argument requests the output to a" \
-  " file called {COMP_FILE} with in the  EEG dataset format" \
+  " file called {COEFF_FILE} with in the  EEG dataset format" \
   " whose channels are the coefficients {C[0..NP-1}, plus the marker channels from the input.\n" \
   "\n" \
   "  -delete {CHNAME[0]} {CHNAME[1]} .. {CHNAME[M-1]}\n" \
