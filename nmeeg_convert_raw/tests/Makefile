@@ -1,4 +1,4 @@
-# Last edited on 2021-08-26 18:59:15 by stolfi
+# Last edited on 2023-11-29 11:24:59 by stolfi
 
 PROG := nmeeg_convert_raw
 PROGDIR = ..
@@ -51,8 +51,8 @@ do-single-test: ${PROGDIR}/${PROG} ${RAW_EEG_FILE}
               -subject ${SUBJECT} \
           > ${OUT_FILE}
 	@echo "== plotting the input data =="
-	nmeeg_plot_channels.sh   ${SHOW} ${OUT_PREFIX} 0 ${VMAX_FULL} 0 -1    0 0 500
-	nmeeg_plot_channels.sh   ${SHOW} ${OUT_PREFIX} 0 ${VMAX_EVTS} 129 -1  0 0 500
+	nmeeg_plot_channels.sh   ${SHOW} ${OUT_PREFIX} 0 ${VMAX_FULL}   0 9999     0 0  1400 500
+	nmeeg_plot_channels.sh   ${SHOW} ${OUT_PREFIX} 0 ${VMAX_EVTS} 129 9999     0 0  1400 500
 
 # ======================================================================
 endif

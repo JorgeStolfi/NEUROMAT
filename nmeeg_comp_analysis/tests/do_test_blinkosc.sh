@@ -1,5 +1,5 @@
 #! /bin/bash 
-# Last edited on 2021-08-26 18:59:09 by stolfi
+# Last edited on 2023-11-29 11:25:17 by stolfi
 
 # Blink pulse pattern plus 10 Hz oscillation (assumed to be eigenvalues P000 and P001)
 
@@ -35,7 +35,7 @@ for ff in ${out_prefix}{_*,}.txt ; do \
   else
     vmax=180
   fi
-  nmeeg_plot_channels.sh ${show} ${prefix} 0 ${vmax} 0 -1 0 0 500 ; \
+  nmeeg_plot_channels.sh ${show} ${prefix} 0 ${vmax}  0 9999  0 0  1400 500 ; \
   nmeeg_plot_spectra.sh ${show} ${prefix}_pwr 100 0 127 480 'linespoints pt 7'
   if [[ "/${animate}" == "/ANIMATE" ]]; then \
     echo "animating the principal component patterns" 1>&2 ; \

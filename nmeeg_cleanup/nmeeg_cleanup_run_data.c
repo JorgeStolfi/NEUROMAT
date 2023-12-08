@@ -1,5 +1,5 @@
 /* See {nmeeg_cleanup_run_data.h} */
-/* Last edited on 2023-10-21 21:54:01 by stolfi */
+/* Last edited on 2023-12-05 23:38:55 by stolfi */
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -105,7 +105,7 @@ void nmeeg_cleanup_run_data_write(char *outPrefix, char *runid, nmeeg_cleanup_ru
     FILE *wr = open_write(fname, TRUE);
 
     neuromat_eeg_header_write(wr, run->h);
-    neuromat_eeg_data_write(wr, run->h->nt, run->h->nc, run->val, 0, run->h->nt-1, 1);
+    neuromat_eeg_data_write(wr, run->h->nt, run->h->nc, run->val, "%14.8e", 0, run->h->nt-1, 1);
     fflush(wr);
     free(fname); 
   }

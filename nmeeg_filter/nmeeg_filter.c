@@ -5,7 +5,7 @@
 #define nmeeg_filter_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
 
-/* Last edited on 2023-10-21 21:51:18 by stolfi */
+/* Last edited on 2023-12-07 17:40:47 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -15,6 +15,8 @@
   "    [ -invert {INV_FLAG} ] \\\n" \
   "    [ -resample {R_STEP} ] \\\n" \
   "    [ -trend {TREND_DEG} {TREND_KEEP} ] \\\n" \
+  "    [ -keepMean {KEEP} ] \\\n" \
+  "    " neuromat_eeg_io_FORMAT_OPT_HELP " \\\n" \
   "    [ -verbose ] \\\n" \
   "    " argparser_help_info_HELP " \\\n" \
   "    < {INFILE}"
@@ -129,6 +131,17 @@
   " present), this trend fittting and separation process is not performed, and" \
   " the {TREND_KEEP} argument is ignored.\n" \
   "\n" \
+  "  -keepMean {KEEP}\n" \
+  "    This optional flag specifes the average (\"DC level\") of the electrodes" \
+  " output files.  If {KEEP} is 1 or 'T', every electrode in every output file" \
+  " (after filtering and rebasing, if requested) will be shifted so that its mean value is the same as in the" \
+  " input file (before filtering and rebasing).  If {KEEP} is 0 or 'F', not specified, the input mean" \
+  " value may be removed (or modified, or passed on) as part of the low-freq component.  This option" \
+  " does not affect marker (non-electrode) channels.  The" \
+  " default is \"-keepMean F\".\n" \
+  "\n" \
+  "" neuromat_eeg_io_FORMAT_OPT_INFO(nef_format_DEFAULT) "\n" \
+  "\n" \
   "  -verbose\n" \
   "    This optional flag causes some additional diagnostic output to be printed.\n" \
   "\n" \
@@ -150,6 +163,8 @@
   "  2021-08-23 Added \"-rebase\".\n" \
   "  2021-08-26 Added \"-electrodes\".\n" \
   "  2021-08-30 Added \"-exclude\", removed \"-electrodes\".\n" \
+  "  2023-12-05 Added the \"-format\" option.\n" \
+  "  2023-12-07 Added the \"-keepMean\" option.\n" \
   "\n" \
   "WARRANTY\n" \
   argparser_help_info_NO_WARRANTY "\n" \
@@ -201,6 +216,8 @@ typedef struct nef_options_t
     nef_freq_filter_t filter;  /* Freq filter parameters. */
     bool_t invert;             /* Freq filter mode: false for bandpass, true for bandkill. */
     int32_t resample;          /* Resampling step. */
+    bool_t keepMean;           /* If true, preserve the mean value of each channel in all output files. */
+    char *format;              /* Format for the data samples in output files. */
     bool_t verbose;            /* True to print more info. */
   } nef_options_t;
   /* Arguments from command line. */
@@ -231,7 +248,7 @@ void nef_filter_signals
     bool_t verbose
   );
   /* Applies to each channel in the EEG dataset {val[0..nt-1][0..nc-1]} the ]
-    filtering specified by {ff}, or its complement if {invert} is 1.
+    filtering specified by {ff}, or its complement if {invert} is true.
     Assumes that any channels to be excluded have been removed already from {ne} and {val}.
 
     If {trdeg} is non-negative, applies trend removal of the given degree before filtering.
@@ -240,11 +257,19 @@ void nef_filter_signals
     The {resample} argument should be the requested resampling step. It
     is used only to check whether the requested step is consistent with
     the filtering. The dataset is NOT resampled. */
+    
+double nef_get_mean(int32_t ne, int32_t nt, int32_t ie, double **val);
+  /* Return the average value of electrode {ie} in the array {val[0..nt-1][0..ne-1]}. */
+  
+void nef_adjust_mean(int32_t ne, int32_t nt, int32_t ie, double **vot, double avg_in);
+  /* Modifies the values of {vot[0..nt-1][ie]} in the array {vot[0..nt-1][0..ne-1]} 
+    so that their average is {avg_in}. */
   
 void nef_write_eeg_signals
   ( int32_t nt, 
     int32_t nc,
     double **val, 
+    char *fmt,
     int32_t ne,
     double fsmp,
     int32_t it_ini,
@@ -254,8 +279,9 @@ void nef_write_eeg_signals
   );
   /* Writes the signals {val[0..nt-1][0..nc-1]}, comprising {nc}
     channels sampled at {nt} times, to standard output.
-    Writes only one very {it_step} frames, beginning with frame
+    Writes only one every {it_step} frames, beginning with frame
     {val[it_ini]} and ending with frame {val[it_fin]}.
+    Each value is written with format {fmt}.
     
     Writes the header {h} to the file, setting {h->nt} to the number
     {nw} of subsampled frames. Checks that {h->nc,h->ne} are equal to
@@ -284,7 +310,7 @@ void nef_update_freq_filter_in_header
     double flo1, 
     double fhi1,
     double fhi0,
-    int32_t finvert
+    bool_t invert
   );
   /* Updates the freq filter parameters in the header {h} to account for the
     soft bandpass/bandkill filtering with parameters {flo0,flo1,fhi1,fhi0,finvert}.
@@ -304,6 +330,9 @@ int32_t main(int32_t argc, char **argv);
 #define nef_MAX_TREND_DEG 5
   /* Max downsampling step allowed (paranoia). */
 
+#define nef_format_DEFAULT "%14.8e"
+  /* Default for the "-format" option. */
+
 int32_t main(int32_t argc, char **argv)
   {
     nef_options_t *o = nef_parse_options(argc, argv);
@@ -313,14 +342,14 @@ int32_t main(int32_t argc, char **argv)
     /* Read the EEG header, provide defaults: */
     int32_t nl = 0;
     neuromat_eeg_header_t *h = neuromat_eeg_header_read(stdin, 20, 600.0, &nl);
-    fprintf(stderr, "read %d header lines\n", nl);
+    if (o->verbose) { fprintf(stderr, "read %d header lines\n", nl); }
     
     /* Get important parameters: */
     int32_t nc = h->nc; /* Number of channels per data frame (including triggers etc.). */
     int32_t ne = h->ne; /* Assumes that the first {ne} channels are electrode potentials. */
     double fsmp = h->fsmp;
-    fprintf(stderr, "input file has %d channels, including %d electrode potentials\n", nc, ne);
-    fprintf(stderr, "input sampling frequency %.10g Hz\n", fsmp);
+    if (o->verbose) { fprintf(stderr, "input file has %d channels, including %d electrode potentials\n", nc, ne); }
+    if (o->verbose) { fprintf(stderr, "input sampling frequency %.10g Hz\n", fsmp); }
 
     /* Rebasing: */
     if (o->rebase_op)
@@ -330,32 +359,36 @@ int32_t main(int32_t argc, char **argv)
             for (int32_t ie = 0; ie < ne; ie++) { o->rebase_wt.e[ie] = 1.0; }
             double_vec_trim(&(o->rebase_wt), ne);
           }
-        fprintf(stderr, "rebasing sample values with %d weights", o->rebase_wt.ne);
-        for (int32_t ie = 0; ie < o->rebase_wt.ne; ie++) { fprintf(stderr, " %.4f", o->rebase_wt.e[ie]); }
-        fprintf(stderr, "\n");
+        if (o->verbose) 
+          { fprintf(stderr, "rebasing sample values with %d weights", o->rebase_wt.ne);
+            for (int32_t ie = 0; ie < o->rebase_wt.ne; ie++) { fprintf(stderr, " %.4f", o->rebase_wt.e[ie]); }
+            fprintf(stderr, "\n");
+          }
         demand(o->rebase_wt.ne == ne, "wrong number of rebasing weights");
       }
     
-    if (ff->type == NULL)
-      { fprintf(stderr, "no frequency filtering\n"); }
-    else
-      { fprintf(stderr, "freq filter type %s", ff->type);
-        fprintf(stderr, " low freq ramp [%.6f _ %.6f]", ff->flo0, ff->flo1);
-        fprintf(stderr, " high freq ramp [%.6f _ %.6f]\n", ff->fhi1, ff->fhi0);
-        fprintf(stderr, "filter mode is %s\n", (o->invert ? "bandpass" : "bandkill"));
+    if (o->verbose) 
+      { if (ff->type == NULL)
+          { fprintf(stderr, "no frequency filtering\n"); }
+        else
+          { fprintf(stderr, "freq filter type %s", ff->type);
+            fprintf(stderr, " low freq ramp [%.6f _ %.6f]", ff->flo0, ff->flo1);
+            fprintf(stderr, " high freq ramp [%.6f _ %.6f]\n", ff->fhi1, ff->fhi0);
+            fprintf(stderr, "filter mode is %s\n", (o->invert ? "bandkill" : "bandpass" ));
+          }
       }
 
     /* Resampling: */
-    fprintf(stderr, "output will have one every %d samples\n", o->resample);
+    if (o->verbose) { fprintf(stderr, "output will have one every %d samples\n", o->resample); }
     demand(o->resample > 0, "invalid resampling step");
     
-    fprintf(stderr, "writing result to standard output\n");
+    if (o->verbose) { fprintf(stderr, "writing result to standard output\n"); }
 
     /* Read the EEG data frames: */
     int32_t nl0 = nl;
     int32_t nt = 0;
     double **val = neuromat_eeg_data_read(stdin, 0, 0, nc, &nl, &nt);
-    fprintf(stderr, "read %d lines, got %d data frames\n", nl - nl0, nt);
+    if (o->verbose) { fprintf(stderr, "read %d lines, got %d data frames\n", nl - nl0, nt); }
     demand(nt > 0, "no frames read");
     demand(nt == h->nt, "inconsistent header {nt}");
     
@@ -363,12 +396,17 @@ int32_t main(int32_t argc, char **argv)
     if (nx > 0)
       { double *wt = (o->rebase_op ? o->rebase_wt.e: NULL);
         nef_exclude_channels(nx, o->exclude.e, nt, &nc, val, &ne, h->chname, wt);
-        fprintf(stderr, "input file now has %d channels, including %d electrode potentials\n", nc, ne);
+        if (o->verbose) { fprintf(stderr, "input file now has %d channels, including %d electrode potentials\n", nc, ne); }
         /* Update {nc,ne} in header: */
         h->ne = ne; h->nc = nc;
         /* Update {ne} in weights: */
         if (o->rebase_op) { double_vec_trim(&(o->rebase_wt), ne); }
       }
+      
+    /* Compute electrode averages in case mean is to be preserved: */
+    double avg_in[ne];
+    for (int32_t ie = 0; ie < ne; ie++)
+      { avg_in[ie] = nef_get_mean(ne, nt, ie, val); }
 
     /* Filter if so requested: */
     if (ff->type != NULL)
@@ -391,21 +429,30 @@ int32_t main(int32_t argc, char **argv)
     int32_t nw = (nt + it_step - 1 - it_ini)/it_step; /* Number of frames to write. */
     int32_t it_fin = it_ini + it_step*((nt - it_ini - 1)/it_step);
     assert((it_fin >= nt - it_step) && (it_fin < nt));
-    fprintf(stderr, "saving %d frames (%d to %d step %d)\n", nw, it_ini, it_fin, it_step);
+    if (o->verbose) { fprintf(stderr, "saving %d frames (%d to %d step %d)\n", nw, it_ini, it_fin, it_step); }
+    
+    if (o->keepMean)
+      { /* Restore mean values to input ones: */
+        if (o->verbose) { fprintf(stderr, "restoring mean values\n"); }
+        for (int32_t ie = 0; ie < ne; ie++)
+          { nef_adjust_mean(ne, nt, ie, val, avg_in[ie]); }
+      }
 
-    /* Compute basic statistics of filtered electrode signals: */
-    neuromat_eeg_channel_stats_t *st = neuromat_eeg_channel_stats_new(nc);
-    neuromat_eeg_channel_stats_t *stg = neuromat_eeg_channel_stats_new(1);
-    double eps = 0.01; /* Assumed uncertainty of measurement (µV). */
-    neuromat_eeg_channel_stats_gather_all(nt, nc, val, NULL, eps, st, ne, stg);
-    fprintf(stderr, "  --- channel statistics ---\n");
-    neuromat_eeg_channel_stats_print_all(stderr, 2, nc, h->chname, FALSE, st, ne, stg);
-    fprintf(stderr, "\n");
-    free(st);
-    free(stg);
+    if (o->verbose)
+      { /* Compute basic statistics of filtered electrode signals: */
+        neuromat_eeg_channel_stats_t *st = neuromat_eeg_channel_stats_new(nc);
+        neuromat_eeg_channel_stats_t *stg = neuromat_eeg_channel_stats_new(1);
+        double eps = 0.01; /* Assumed uncertainty of measurement (µV). */
+        neuromat_eeg_channel_stats_gather_all(nt, nc, val, NULL, eps, st, ne, stg);
+        fprintf(stderr, "  --- channel statistics ---\n");
+        neuromat_eeg_channel_stats_print_all(stderr, 2, nc, h->chname, FALSE, st, ne, stg);
+        fprintf(stderr, "\n");
+        free(st);
+        free(stg);
+      }
 
     /* Write them out, subsampled: */
-    nef_write_eeg_signals(nt, nc, val, ne, fsmp, it_ini, it_fin, it_step, h);
+    nef_write_eeg_signals(nt, nc, val, o->format, ne, fsmp, it_ini, it_fin, it_step, h);
       
     int32_t it;
     for (it = 0; it < nt; it++) { free(val[it]); } 
@@ -519,10 +566,10 @@ void nef_filter_signals
     fcut = fmin(fcut, fsmp/2);
       
     /* Compute subsampling indexing parameters: */
-    if ((invert != 0) || (fcut >= fsmp/2))
+    if (invert)
       { demand(resample == 1, "no resampling allowed with bandkill filter"); }
     else 
-      { int32_t max_resample = (int32_t)floor((fsmp/2)/fcut); 
+      { int32_t max_resample = (fcut >= fsmp/2 ? 1 : (int32_t)floor((fsmp/2)/fcut)); 
         if (max_resample > nef_MAX_RESAMPLE) { max_resample = nef_MAX_RESAMPLE; }
         demand(resample <= max_resample, "resampling step too large for this filter");
       }
@@ -637,6 +684,7 @@ void nef_write_eeg_signals
   ( int32_t nt, 
     int32_t nc, 
     double **val, 
+    char *fmt,
     int32_t ne,
     double fsmp,
     int32_t it_ini,
@@ -670,7 +718,7 @@ void nef_write_eeg_signals
     /* Write to {stdout}: */
     FILE *wr = stdout;
     neuromat_eeg_header_write(wr, h);
-    neuromat_eeg_data_write(wr, nt, nc, val, it_ini, it_fin, it_step);
+    neuromat_eeg_data_write(wr, nt, nc, val, fmt, it_ini, it_fin, it_step);
     fflush(wr);
   }
 
@@ -713,13 +761,14 @@ void nef_update_freq_filter_in_header
     double flo1, 
     double fhi1, 
     double fhi0, 
-    int32_t finvert
+    bool_t invert
   )
   {
+    int32_t finvert = (invert ? 1 : 0);
     if (h->finvert < 0)
       { /* Input was not freq-filtered. */
         demand(isnan(h->flo0) && isnan(h->flo1) &&isnan(h->fhi1) && isnan(h->fhi0), "inconsistent freq filter params in header");
-        if ((finvert == 1) || (flo1 > 0) || (fhi1 < +INF))
+        if (invert || (flo1 > 0) || (fhi1 < +INF))
           { /* New freq filter is not trivial, just save it: */
             h->finvert = finvert;
             h->flo0 = flo0; h->flo1 = flo1;
@@ -731,10 +780,10 @@ void nef_update_freq_filter_in_header
         demand((! isnan(h->flo0)) && (! isnan(h->flo1)), "inconsistent low-shoulder freq filter params in header");
         demand((! isnan(h->fhi1)) && (! isnan(h->fhi0)), "inconsistent high-shoulder freq filter params in header");
         demand((h->finvert == 0) || (h->finvert == 1), "invalid freq filter invert flag in header");
-        if ((finvert == 0) && (flo1 <= 0) && (fhi1 >= +INF))
-          { /* Unit filter applied, keep old filter. */
+        if ((! invert) && (flo1 <= 0) && (fhi1 >= +INF))
+          { /* No filtering is being applied, keep old filter. */
           }
-        else if ((finvert == 1) && (flo1 <= 0) && (fhi1 >= +INF))
+        else if (invert && (flo1 <= 0) && (fhi1 >= +INF))
           { /* Kill-all filter applied, overwrites old filter: */
             h->finvert = finvert;
             h->flo0 = flo0; 
@@ -750,9 +799,9 @@ void nef_update_freq_filter_in_header
               }
             /* Check for overlapping low-low or high-high shoulders: */
             if ((fmax(h->flo0, flo0) < fmin(h->flo1, flo1))) 
-              { fprintf(stderr, "!! warning: overlapping low-freq shoulders"); }
+              { fprintf(stderr, "!! warning: overlapping low-freq shoulders\n"); }
             if ((fmax(h->fhi1, fhi1) < fmin(h->fhi0, fhi0))) 
-              { fprintf(stderr, "!! warning: overlapping high-freq shoulders"); }
+              { fprintf(stderr, "!! warning: overlapping high-freq shoulders\n"); }
             /* Intersect the two filters: */
             h->flo0 = fmax(h->flo0, flo0); 
             h->flo1 = fmax(h->flo1, flo1);
@@ -763,8 +812,28 @@ void nef_update_freq_filter_in_header
             demand((h->flo1 <= h->fhi0) && (h->flo0 <= h->fhi1), "something else wrong with freq filter params");
             /* Check for overlapping low and high shoulders (no flat band): */
             if (h->flo1 > h->fhi1)
-              { fprintf(stderr, "!! warning: overlapping high-freq and low-freq shoulders"); }
+              { fprintf(stderr, "!! warning: overlapping high-freq and low-freq shoulders\n"); }
           }
+      }
+  }
+double nef_get_mean(int32_t ne, int32_t nt, int32_t ie, double **val)
+  { demand((ie >= 0) && (ie < ne), "bad channel index");
+    double sum = 0;
+    for (int32_t it = 0; it < nt; it++)
+      { double vi = val[it][ie];
+        demand(isfinite(vi), "infinite or {NAN} sample");
+        sum += vi;
+      }
+    return sum/nt;
+  }
+
+void nef_adjust_mean(int32_t ne, int32_t nt, int32_t ie, double **vot, double avg_in)
+  { demand((ie >= 0) && (ie < ne), "bad channel index");
+    double avg_ot = nef_get_mean(ne, nt, ie, vot);
+    for (int32_t it = 0; it < nt; it++)
+      { double vi = vot[it][ie];
+        demand(isfinite(vi), "infinite or {NAN} sample");
+        vot[it][ie] = vi + avg_in - avg_ot;
       }
   }
 
@@ -838,6 +907,16 @@ nef_options_t *nef_parse_options(int32_t argc, char **argv)
       }
     else
       { o->trend_deg = -1; o->trend_keep = FALSE; }
+  
+    if (argparser_keyword_present(pp, "-keepMean"))
+      { o->keepMean = argparser_get_next_bool(pp); }
+    else
+      { o->keepMean = FALSE; }
+  
+    if (argparser_keyword_present(pp, "-format"))
+      { o->format = argparser_get_next_non_keyword(pp); }
+    else
+      { o->format = nef_format_DEFAULT; }
  
     o->verbose = argparser_keyword_present(pp, "-verbose");
    

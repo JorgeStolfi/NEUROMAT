@@ -1,5 +1,5 @@
 #! /bin/bash
-# Last edited on 2021-08-26 18:59:01 by stolfi
+# Last edited on 2023-11-29 11:25:43 by stolfi
 
 inprefix="$1"; shift
 runs="$1"; shift
@@ -26,7 +26,7 @@ for ff in ${outprefix}*.txt ; do \
   prefix=${ff%.txt} ; 
   nmeeg_spectrum ${prefix} 0 0 < ${prefix}.txt ; \
   vmax=180
-  nmeeg_plot_channels.sh ${show} ${prefix} 0 ${vmax} 0 -1 0 0 500 ; \
+  nmeeg_plot_channels.sh ${show} ${prefix} 0 ${vmax}  0 9999  0 0  1400 500 ; \
   nmeeg_plot_spectra.sh ${show} ${prefix}_pwr 100 0 130 480 'linespoints pt 7'
   if [[ "/${animate}" == "/ANIMATE" ]]; then \
     echo "animating the principal component patterns" 1>&2 ; \

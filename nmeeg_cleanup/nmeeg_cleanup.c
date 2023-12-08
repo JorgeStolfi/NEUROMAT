@@ -4,7 +4,7 @@
 
 #define nmeeg_cleanup_C_COPYRIGHT \
   "Copyright © 2017 by the State University of Campinas (UNICAMP)"
-/* Last edited on 2023-10-21 21:54:11 by stolfi */
+/* Last edited on 2023-11-04 01:26:17 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -30,81 +30,137 @@
   "  The program reads from standard input a set of filtered EEG datasets" \
   " and writes to standard output new /cleaned/ versions of the same.\n" \
   "\n" \
-  "  The cleanup consists in (1) identifying a global set {GARB} of channels that seem to be garbage in some runs, and setting them to zero; (2) identifying blinking episodes, replacng the estimated blinking components of the EEG by new channels \"BL0\", \"BL1\", ..., and marking off blink episodes as \"BLMK\"; and (3) changing the potential reference to a weighted mean of the channels and saving the shift as a new channel \"CZS\".\n" \
+  "  The cleanup consists in (1) identifying a global set {GARB} of channels" \
+  " that seem to be garbage in some runs, and setting them to zero; (2) identifying" \
+  " blinking episodes, replacng the estimated blinking components of the" \
+  " EEG by new channels \"BL0\", \"BL1\", ..., and marking off blink" \
+  " episodes as \"BLMK\"; and (3) changing the potential reference to a" \
+  " weighted mean of the channels and saving the shift as a new channel \"CZS\".\n" \
   "\n" \
-  "   The cleanup process is iterative and starts with all frames in all runs assumed to be blink episodes (\"BLMK\" set to " stringify(nclup_BLMK_VALUE) ") and no channels assumed to be garbage ({GARB} empty).  At each iteration, the program assumes that the values of all channels in the set {GARB} are zero in all frames, and:\n" \
+  "   The cleanup process is iterative and starts with all frames in all" \
+  " runs assumed to be blink episodes (\"BLMK\" set" \
+  " to " stringify(nclup_BLMK_VALUE) ") and no channels assumed" \
+  " to be garbage ({GARB} empty).  At each iteration, the program assumes" \
+  " that the values of all channels in the set {GARB} are zero in all" \
+  " frames, and:\n" \
   "\n" \
-  "      1. performs a differential principal component analysis of all frames in all runs, comparing currently assumed blink frames with assumed non-blink frames, and assumes that the first {NBL} components are potential patterns due to blinks.\n" \
+  "      1. performs a differential principal component analysis of all" \
+  " frames in all runs, comparing currently assumed blink frames with" \
+  " assumed non-blink frames, and assumes that the first {NBL} components" \
+  " are potential patterns due to blinks.\n" \
   "\n" \
-  "      2. removes those components from all frames, saving the coefficients of those patterns as {NBL} new channels \"BL0\", \"BL1\", ....\n" \
+  "      2. removes those components from all frames, saving the coefficients" \
+  " of those patterns as {NBL} new channels \"BL0\", \"BL1\", ....\n" \
   "\n" \
-  "      3. identifies the frame index intervals where the Euclidean norm of those coefficients is greater than a specified threshold.\n" \
+  "      3. identifies the frame index intervals where the Euclidean norm" \
+  " of those coefficients is greater than a specified threshold.\n" \
   "\n" \
-  "      4. updates \"BLMK\" to mark those intervals (suitably extended) as blinking episodes.\n" \
+  "      4. updates \"BLMK\" to mark those intervals (suitably extended) as" \
+  " blinking episodes.\n" \
   "\n" \
   "      5. for each run separately:\n" \
   "\n" \
-  "          5.1. computes the covariance matrix of the {NE} electrodes in frames NOT marked as blinks.\n" \
+  "          5.1. computes the covariance matrix of the {NE} electrodes in" \
+  " frames NOT marked as blinks.\n" \
   "\n" \
-  "          5.2. assumes that any channel that has large variance and small correlations with other channels is bad, and adds it to a set {GARB_RUN} private to that run, and a new global set {GARB}.\n" \
+  "          5.2. assumes that any channel that has large variance and" \
+  " small correlations with other channels is bad, and adds it to a" \
+  " set {GARB_RUN} private to that run, and a new global set {GARB}.\n" \
   "\n" \
-                                                                                                                   "  These steps are repeated " stringify(nclup_MAX_ITER) " times or until the global set {GARB} and the \"BLMK\" channel seem to stabilize.\n" \
+                                                                                                                   "  These steps are repeated " stringify(nclup_MAX_ITER) " times or until the global set {GARB} and the \"BLMK\" channe" \
+  "l seem to stabilize.\n" \
   "\n" \
- "  Then, for each frame of each run, the program computes a weighted average {VAVG} of the electrode potentials that are not in the global {GARB} set, and subtracts that value from all channels.  The value {VAVG}, negated, is included in the frame as the new elecrode channel \"CZS\".\n" \
+ "  Then, for each frame of each run, the program computes a weighted" \
+  " average {VAVG} of the electrode potentials that are not in the global {GARB} set, and subtracts that value from all channels.  The value {VAVG}, negated, is included in the frame as the new elecrode channel \"CZS\".\n" \
   "\n" \
   "INPUT FILES\n" \
-  "  The input EEG data is read from files \"{IN_PREF}_r{RUNID}.txt\" where {IN_PREF} and {RUNID} are specified in the command line.  The files should all belong to the same subject and session.\n" \
+  "  The input EEG data is read from files \"{IN_PREF}_r{RUNID}.txt\" where" \
+  " {IN_PREF} and {RUNID} are specified in the command line.  The files should" \
+  " all belong to the same subject and session.\n" \
   "\n" \
   "  The program assumes that every data line (/data frame/) in each input file contains" \
   " simultaneous samples from some fixed number {NC} of data channels, of which" \
   " the first {NE} are electrode potentials, while the rest are phase indicators (/markers/)" \
-  " or other unspecified signals.  The electrode channels should not include the reference electrode \"CZ\", which is assumed to be zero.\n" \
+  " or other unspecified signals.  The electrode channels should not include" \
+  " the reference electrode \"CZ\", which is assumed to be zero.\n" \
   "\n" \
   "OUTPUT FILES\n" \
-  "  The cleaned versions of each dataset \"{IN_PREF}_r{RUNID}.txt\" is written to files \"{OUT_PREF}_r{RUNID}.txt\".  These files will have three additional channels:\n" \
+  "  The cleaned versions of each dataset \"{IN_PREF}_r{RUNID}.txt\" is written" \
+  " to files \"{OUT_PREF}_r{RUNID}.txt\".  These files will have three" \
+  " additional channels:\n" \
   "\n" \
   "    \"CZS\" the reference electrode \"CZ\" (assumed to be zero) shifted like all others;\n" \
   "    \"BL0\", \"BL1\", ... the coefficients of the first {NBL} blink pattern for each frame;\n" \
-  "    \"BLMK\" a marker channel that is positive in the frames where the blink signals seem to be significant\n" \
+  "    \"BLMK\" a marker channel that is positive in the frames where the" \
+  " blink signals seem to be significant\n" \
   "\n" \
-  "  The program also writes to \"{OUT_DIR}_BL0.txt\" the inferred electrode potential pattern, as a single-frame EEG file.\n" \
+  "  The program also writes to \"{OUT_DIR}_BL0.txt\" the inferred electrode" \
+  " potential pattern, as a single-frame EEG file.\n" \
   "\n" \
-  "  The channels \"CZS\" and \"BL0\", \"BL1\", ... are potentials (in µV) and thus are inserted after the first {NE} input channels.  Then the program appends the original {NC-NE} marker" \
-  " channels from the input frame, unchanged.  Finally the marker channel \"BLMK\" is appended after those.\n" \
+  "  The channels \"CZS\" and \"BL0\", \"BL1\", ... are potentials (in µV) and" \
+  " thus are inserted after the first {NE} input channels.  Then the program appends" \
+  " the original {NC-NE} marker channels from the input frame, unchanged.  Finally" \
+  " the marker channel \"BLMK\" is" \
+  " appended after those.\n" \
   "\n" \
   "  The resulting frame is then written to the output.\n" \
   "\n" \
-  "  The program also writes to \"{OUT_DIR}_blinks.txt\" the intervals of time in each run where the marker channel \"BLMK\" is positive.  The file has one line for each run, with fields \"{SUBJ} {RUNID} {FLAG} {BL_INTS}\".  The {FLAG} currently is always \"-\". The {BL_INTS} are zero or more pairs of times \"{T_INI}_{T_FIN}\" meaning that the channel \"BLMK\" is positive between each {T_INI} and the corresponding {T_FIN}.  The intervals are separated by commas.\n" \
+  "  The program also writes to \"{OUT_DIR}_blinks.txt\" the intervals of time" \
+  " in each run where the marker channel \"BLMK\" is positive.  The file has one" \
+  " line for each run, with fields \"{SUBJ} {RUNID} {FLAG} {BL_INTS}\".  The {FLAG} currently" \
+  " is always \"-\". The {BL_INTS} are zero or more pairs of times \"{T_INI}_{T_FIN}\" meaning" \
+  " that the channel \"BLMK\" is positive between each {T_INI} and the corresponding {T_FIN}.  The" \
+  " intervals are separated by commas.\n" \
   "\n" \
-  "  The times {T_INI} and {T_FIN} are measured in seconds from the start of the run.  For example, if channel \"BLMK\" is positive in frames 17 through 33, and the sampling frequency is 100 Hz (one frame every 0.010 seconds), then {T_INI} will be 0.170 and {T_FIN} will be 0.340.   In some cases, {T_INI} may be negative, and {T_FIN} may extend beyond the end of the run.\n" \
+  "  The times {T_INI} and {T_FIN} are measured in seconds from the start of the run.  For" \
+  " example, if channel \"BLMK\" is positive in frames 17 through 33, and the sampling" \
+  " frequency is 100 Hz (one frame every 0.010 seconds), then {T_INI} will be 0.170 and {T_FIN} will" \
+  " be 0.340.   In some cases, {T_INI} may be negative, and {T_FIN} may extend beyond" \
+  " the end of the run.\n" \
   "\n" \
   "OPTIONS\n" \
   "  -inPrefix {IN_PREF}\n" \
-  "    This mandatory argument specifies the common prefix for the names of the input files.  It should include the subject/session identification; for example \"flt-runs/s012\".\n" \
+  "    This mandatory argument specifies the common prefix for the names of the input files.  It" \
+  " should include the subject/session identification; for example \"flt-runs/s012\".\n" \
   "\n" \
   "  -runs {RUNID}..\n" \
-  "    This mandatory argument specifies the IDs of the runs to process for this subject/sesson, including the respective block numbers.  Each {RUNID} must be a 5-digit decimal integer, zero padded; such as \"00305\" for run 5 in block 3.\n" \
+  "    This mandatory argument specifies the IDs of the runs to process for this" \
+  " subject/sesson, including the respective block numbers.  Each {RUNID} must be" \
+  " a 5-digit decimal integer, zero padded; such as \"00305\" for run 5 in block 3.\n" \
   "\n" \
   "  -blinkTerms {NBL}..\n" \
-  "    This mandatory argument specifies how many orthogonal components to assume in the blink potential pattern.  At least one component must be specified.\n" \
+  "    This mandatory argument specifies how many orthogonal components to assume" \
+  " in the blink potential pattern.  At least one component must be specified.\n" \
   "\n" \
   "  -blinkThresh {BL_THR}..\n" \
-  "    This mandatory argument specifies the threshold at which the strength of the blink patterns is to be considered indicative of a blinking event.\n" \
+  "    This mandatory argument specifies the threshold at which the strength of" \
+  " the blink patterns is to be considered indicative of a blinking event.\n" \
   "\n" \
   "  -blinkRad {BL_RAD}\n" \
-  "    Once a frame has been characterized as part of a blinking event by the criterion \"-blinkThresh\", adjacent frames are considered part of the blinking event too.  This mandatory argument specifies the number of frames to incldue before and after each primary blink frame.\n" \
+  "    Once a frame has been characterized as part of a blinking event by the" \
+  " criterion \"-blinkThresh\", adjacent frames are considered part of the" \
+  " blinking event too.  This mandatory argument specifies the number of frames" \
+  " to incldue before and after each primary blink frame.\n" \
   "\n" \
   "  -changeThresh {CH_THR}\n" \
-  "    This mandatory argument specifies the convergence criterion for the iterative cleanup algorithm.  The cleanup is assumed to have converged when, among other criteria, the Euclidean change in the blink pattern, between two successive iterations, is less than {CH_THR} in all frames that have not been included in blinking events.\n" \
+  "    This mandatory argument specifies the convergence criterion for the" \
+  " iterative cleanup algorithm.  The cleanup is assumed to have converged" \
+  " when, among other criteria, the Euclidean change in the blink pattern, between" \
+  " two successive iterations, is less than {CH_THR} in all frames that have not" \
+  " been included in blinking events.\n" \
   "\n" \
   "  -numCorr {CORR_NM}\n" \
   "  -corrThresh {CORR_THR}\n" \
-  "    These mandatory arguments specify the criterion to detect \"garbage\" electrodes in each run.  Namely, an electrode is considered to be \"non-garbage\" if it has  at least {COOR_NM} other electrodes with a correlation coefficient of {CORR_THR} or more.\n" \
+  "    These mandatory arguments specify the criterion to detect \"garbage\" electrodes" \
+  " in each run.  Namely, an electrode is considered to be \"non-garbage\" if it has" \
+  " at least {COOR_NM} other electrodes with a correlation coefficient of {CORR_THR} or more.\n" \
   "\n" \
-  "    This mandatory argument specifies the electrodes that are required to qualify an electrode as \"not garbage\".\n" \
+  "    This mandatory argument specifies the electrodes that are required to" \
+  " qualify an electrode as \"not garbage\".\n" \
   "\n" \
   "  -outPrefix {OUT_PREF}\n" \
-  "    Common prefix for output file names, including subject/session id.  For example, \"cln-runs/s012\"." \
+  "    Common prefix for output file names, including subject/session id.  For" \
+  " example, \"cln-runs/s012\"." \
   "\n" \
   "DOCUMENTATION OPTIONS\n" \
   argparser_help_info_HELP_INFO "\n" \

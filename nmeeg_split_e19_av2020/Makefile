@@ -8,6 +8,6 @@ JS_LIBS := \
   libjs.a \
   
 OTHER_LIBS := \
-  /usr/lib64/libfftw3.a
+  /usr/lib/x86_64-linux-gnu/libfftw3.so
 
 include ${STOLFIHOME}/programs/c/GENERIC-PROGS.make

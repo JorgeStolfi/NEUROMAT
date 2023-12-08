@@ -1,16 +1,16 @@
 #! /bin/bash
-# Last edited on 2013-06-15 13:33:37 by stolfilocal
+# Last edited on 2023-11-04 09:20:07 by stolfi
 
 # Creates an EEG dataset test file by extracting a largish chunk of
 # one of Ghilslain's datasets, or filtering such a chunk.
 
 # Arguments:
-subject=$(( 10#$1 )); shift  # Single-digit subject ID.
-block="$1"; shift            # Block id ("1", "2", or "1-2").
-filter=$(( 10#$1 )); shift   # Use filtered (1) or unfiltered (0) runs?
-otag="$1"; shift             # Output tag.
-nskip=$(( 10#$1 )); shift;   # Index of initial frame (from 0).
-nread=$(( 10#$1 )); shift;   # Number of frames to extract.
+subject=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift  # Single-digit subject ID.
+block="$1"; shift                                          # Block id ("1", "2", or "1-2").
+filter=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift   # Use filtered (1) or unfiltered (0) runs?
+otag="$1"; shift                                           # Output tag.
+nskip=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift;   # Index of initial frame (from 0).
+nread=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift;   # Number of frames to extract.
 
 # If ${filter} is 0,extracts from a raw dataset 
 # "s${subject}_bl${block}.txt" a chunk 

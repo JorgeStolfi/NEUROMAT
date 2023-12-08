@@ -1,9 +1,15 @@
 #! /bin/bash
-# Last edited on 2023-10-21 19:04:20 by stolfi
+# Last edited on 2023-12-05 05:10:22 by stolfi
 
 # Usage:
 #
-#   nmeeg_plot_spectra.sh {SHOW}  {FILE_NAME} {FMAX} {FIST_ELECTR} {LAST_ELECTR} {VSIZE} {STYLE}
+#   nmeeg_plot_spectra.sh \
+#     {SHOW} \
+#     {FILE_NAME} \
+#     {FMAX} \
+#     {FIST_ELECTR} {LAST_ELECTR} \
+#     {VSIZE} {STYLE} \
+#     [ -outPrefix {OPREF} ]
 #
 # where
 #
@@ -11,23 +17,40 @@
 #   {FILE_NAME} is the file name prefix.
 #   {FMAX} is the max frequency to plot in Hz.
 #   {FIRST_ELECTR} is the index of the first electrode to plot (from 0)
-#   {LAST_ELECTR} is the index of the last electrode to plot (from 0), or -1 for last electrode.
+#   {LAST_ELECTR} is the index of the last electrode to plot (from 0), or 9999.. for last electrode.
 #   {VSIZE} is the plot's total vertical size in pixels.
 #   {STYLE} is a gnuplot plotting style (eg. "linespoints lt 1 pt 7") or "popsicles".
 #
+# The optional "-outPrefix" key specifies the output file name prefix {OPREF} (minus the ".png")
+# The default {OPREF} is {FILE_NAME}.
+#
 # Reads {FILE_NAME}.txt, which is supposed to contain the power spectra of
-# the electrodes, one frequency per line.  Writes {FILE_NAME}.png, the
+# the electrodes, one frequency per line.  Writes {OPREF}.png, the
 # spectral plot.
 
 echo "$@" 1>&2
 
 show=$1; shift
 fname=$1; shift
-fmax=$(( 10#$1 )); shift;
-inie=$(( 10#$1 )); shift
-fine=$(( 10#$1 )); shift
-vsize=$(( 10#$1 )); shift; 
+fmax=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift;
+inie=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift
+fine=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift
+vsize=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift; 
 style="$1"; shift
+
+opref="${fname}"
+while [[ $# -gt 0 ]]; do
+  if [[ "/$1" == "/-outPrefix" ]]; then
+    if [[ $# -ge 2 ]]; then
+      shift;
+      opref="$1"; shift
+    else
+      echo "** missing '-outPrefix' argument" 1>&2; exit 1
+    fi
+  else
+    echo "** spurious arguments '$*'" 1>&2; exit 1
+  fi
+done
 
 if [[ ${inie} -lt 0 ]]; then
   echo "** bad first electrode index" 1>&2 ; exit 1
@@ -39,10 +62,10 @@ if [[ ! ( -s ${fname}.txt ) ]]; then
   echo "** ${fname}.txt not found" 1>&2 ; exit 1
 fi
 
-ne=$(( `cat ${fname}.txt | egrep -m 1 -e '^ne[ ]+[=]' | sed -e 's:^.*= *:10#:'` ))
+ne=( `cat ${fname}.txt | egrep -m 1 -e '^ne[ ]+[=]' | sed -e 's:^.*= *0*\([0-9]\):\1:'` )
 echo "found ${ne} electrodes" 1>&2 
 
-if [[ ${fine} -lt 0 ]]; then
+if [[ ${fine} -ge ${ne} ]]; then
   echo "plotting all electrodes in input file" 1>&2 
   fine=$(( ${ne} - 1 ))
 fi
@@ -162,12 +185,18 @@ unset multiplot
 quit
 EOF
 
-convert ${tmp}.png -resize '50%' ${fname}.png
-ls -l ${fname}.png
+plotfile="${opref}.png"
+
+convert ${tmp}.png -resize '50%' ${plotfile}
+ls -l ${plotfile}
 
 if [[ "${show}" == "SHOW" ]]; then
-  display -title '%d/%f' ${fname}.png
+  if [[ -s ${plotfile} ]]; then
+    display -title '%d/%f' ${plotfile}
+  else
+    echo "** spectrum gnuplot failed" 1>&2; exit 1
+  fi
 fi
 
 rm -fv ${tmp}.*
-ls -l ${fname}.png
+ls -l ${plotfile}

@@ -1,12 +1,12 @@
 #! /bin/bash
-# Last edited on 2013-06-13 15:33:17 by stolfilocal
+# Last edited on 2023-11-04 09:20:13 by stolfi
 
 # Arguments:
-subject="$1"; shift          # Subject ID (3 digits).
-filter=$(( 10#$1 )); shift   # Use filtered (1) or unfiltered (0) runs?
-rini=$(( 10#$1 )); shift     # First run.
-rfin=$(( 10#$1 )); shift     # Last run.
-otag="$1"; shift;            # A tag for the output files. 
+subject="$1"; shift                                        # Subject ID (3 digits).
+filter=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift   # Use filtered (1) or unfiltered (0) runs?
+rini=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift     # First run.
+rfin=$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:'); shift     # Last run.
+otag="$1"; shift;                                          # A tag for the output files. 
 
 # Concatenates multiple runs into one big data file for PCA
 

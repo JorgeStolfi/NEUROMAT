@@ -4,7 +4,7 @@
 
 #define nmeeg_correl_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
-/* Last edited on 2023-10-22 09:42:49 by stolfi */
+/* Last edited on 2023-12-05 23:36:01 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -570,7 +570,7 @@ void nec_write_eeg_eigenvector(char *prefix, char *tag, int ne, double evec[], n
     FILE *wr = open_write(fname, TRUE);
     neuromat_eeg_header_write(wr, h);
 
-    neuromat_eeg_frame_write(wr, ne, evec);
+    neuromat_eeg_frame_write(wr, ne, evec, "%14.8e");
     fclose(wr);
     free(fname);
   }
@@ -584,7 +584,7 @@ void nec_write_eeg_dataset(char *prefix, char *tag, int nt, int nc, double **val
     asprintf(&fname, "%s%s.txt", prefix, tag);
     FILE *wr = open_write(fname, TRUE);
     neuromat_eeg_header_write(wr, h);
-    neuromat_eeg_data_write(wr, nt, nc, val, 0, nt-1, 1);
+    neuromat_eeg_data_write(wr, nt, nc, val, "%14.8e", 0, nt-1, 1);
     fclose(wr);
     free(fname);
   }

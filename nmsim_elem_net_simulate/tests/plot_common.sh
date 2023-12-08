@@ -1,5 +1,5 @@
 #! /bin/bash
-# Last edited on 2019-05-28 15:54:55 by jstolfi
+# Last edited on 2023-11-04 09:02:47 by stolfi
 
 # Reads the trace of a neuron in an elem_level simulation.
 # Plots the potential the neuron as a function of time.
@@ -16,12 +16,7 @@ tmp="/tmp/$$"
 tfile="${tmp}.png"
 
 # Extract the neuron number from the file name:
-nnum="${fname%.txt}"
-echo "nnum = ${nnum}"
-nnum="${nnum#*_n}"
-echo "nnum = ${nnum}"
-nnum=$(( 0 + 10#${nnum} ))
-echo "nnum = ${nnum}"
+nnum="$(echo ${fname} | sed -e 's:[.]txt$::' -e 's:^.*_n0*\([0-9]\):\1:g')"
 
 # Prefix for temporary file names
 tmp="/tmp/$$"

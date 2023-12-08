@@ -1,4 +1,4 @@
-# Last edited on 2021-08-26 22:09:57 by stolfi
+# Last edited on 2023-11-29 11:22:01 by stolfi
 
 PROG := nmeeg_spectrum
 PROGDIR := ..
@@ -57,7 +57,7 @@ OUT_PREFIX := out/${DATASET}
 
 do-single-test: ${PROGDIR}/${PROG} ${EEG_FILE}
 	rm -f ${OUT_PREFIX}_* ${OUT_PREFIX}.*
-	nmeeg_plot_channels.sh   ${SHOW} data/${DATASET} ${FSMP} 420 0 $$(( ${NC} - 1 )) 0 ${NT} 500
+	nmeeg_plot_channels.sh   ${SHOW} data/${DATASET} ${FSMP} 420  0 $$(( ${NC} - 1 ))  0 ${NT}  1400 500
 	${PROGDIR}/${PROG} \
           ${OUT_PREFIX} 0 ${NT} \
           < ${EEG_FILE}

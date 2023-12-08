@@ -5,7 +5,7 @@
 #define nmeeg_convert_raw_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
 
-/* Last edited on 2023-10-21 21:51:51 by stolfi */
+/* Last edited on 2023-12-05 23:37:35 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -150,7 +150,7 @@ int main(int argc, char **argv)
       { int nr = neuromat_eeg_raw_frame_read(stdin, hr->version, o->unit, nc, ht->chname, val); 
         demand(nr > 0, "** unexpected EOF");
         if (it >= skipGoal) 
-          { neuromat_eeg_frame_write(stdout, nc, val);
+          { neuromat_eeg_frame_write(stdout, nc, val, "%14.8e");
             copyCount++;
           }
         else

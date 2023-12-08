@@ -1,4 +1,4 @@
-# Last edited on 2021-08-26 18:59:42 by stolfi
+# Last edited on 2023-11-29 11:23:19 by stolfi
 
 PROG := nmeeg_make_test_pulses.gawk
 PROGDIR := ..
@@ -8,10 +8,10 @@ include ${STOLFIHOME}/programs/c/GENERIC-PROGS-TEST.make
 # Format: {TYPE}:{NT}:{FSMP}
  
 TESTS := \
-  3:3500:500 \
-  2:3500:500 \
   1:3500:500 \
   0:3500:500 \
+  2:3500:500 \
+  3:3500:500 \
 
 ALL_TESTS := \
   0:3500:500 \
@@ -51,9 +51,10 @@ do-single-test: ${PROGDIR}/${PROG}
 	nmeeg_plot_channels.sh \
           SHOW \
           ${OUT_PREFIX} 0 \
-          160 0 -1 \
+          160 \
+          0 9999 \
           0 0 \
-          500
+          1400 500
 
 # ======================================================================
 endif

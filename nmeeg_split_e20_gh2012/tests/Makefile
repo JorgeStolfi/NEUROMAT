@@ -1,4 +1,4 @@
-# Last edited on 2021-08-26 19:00:10 by stolfi
+# Last edited on 2023-11-29 11:21:11 by stolfi
 
 PROG := nmeeg_split_e20_gh2012
 PROGDIR = ..
@@ -74,7 +74,7 @@ do-single-test: ${PROGDIR}/${PROG} ${RAW_EEG_FILE} ${RTY_FILE}
               -marker "Occ" 1 1 -612 1800 50.0 \
               -marker "RAp" 2 1 -312  900 60.0
 	wc -l ${OUT_PREFIX}_r???.txt
-	nmeeg_plot_channels.sh SHOW ${SAMPLE_NAME} ${FSMP} 100 0 -1 0 ${FRAMES_PER_RUN}  500
+	nmeeg_plot_channels.sh SHOW ${SAMPLE_NAME} ${FSMP} 110  0 9999  0 ${FRAMES_PER_RUN}  1400 500
 
 # ----------------------------------------------------------------------
 # Obtaining the test data:

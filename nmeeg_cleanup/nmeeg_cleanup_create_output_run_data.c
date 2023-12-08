@@ -1,5 +1,5 @@
 /* See {nmeeg_cleanup_create_output_run_data.h} */
-/* Last edited on 2017-10-17 23:01:55 by jstolfi */
+/* Last edited on 2023-11-02 06:05:46 by stolfi */
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -9,6 +9,7 @@
 #include <bool.h>
 #include <affirm.h>
 #include <jsmath.h>
+#include <jsstring.h>
 
 #include <neuromat_eeg_header.h>
 #include <neuromat_eeg_io.h>

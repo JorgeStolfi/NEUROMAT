@@ -5,7 +5,7 @@
 #define nmeeg_split_e128_gh2013_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
 
-/* Last edited on 2023-10-21 21:50:07 by stolfi */
+/* Last edited on 2023-12-05 23:00:33 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -394,7 +394,7 @@ void nes_adjust_electrode_averages_in_run
   );
   /* Shifts all electrode channels {0..ne-1} in the frames
     {vru[0..nt-1]} of a single run so that the `mean' value of
-    each electrode is zero.  Returns the subtracted mean value.
+    each electrode is zero.
     
     The averaging considers only samples in the fixation and stimulus phases
     (indicated by nonzero values in channels {ic_fx_out} and {ic_st_out},
@@ -408,8 +408,8 @@ double nes_adjust_electrode_average
     double wt[], /* (IN) Frame weights. */
     double pr[]  /* (WORK) Validity prob. */
   );
-  /* Shifts the samples {vru[0..nt-1][ie]} so that the `mean' value of
-    each electrode is zero.  In the mean computation, each frame {vru[kt]} 
+  /* Shifts the samples {vru[0..nt-1][ie]} of electrode {ie} so that the `mean' value of
+    the electrode is zero.  In the mean computation, each frame {vru[kt]} 
     gets weight {wt[kt]}, and is further un-wheighted if its sample
     appears to be an outlier.  The scratch array {pr} must have {nt} elements. */
           
@@ -453,29 +453,30 @@ void nes_output_run
     int nc,
     double **vru,
     char *outDir,
-    neuromat_eeg_header_t *h
+    neuromat_eeg_header_t *hot
   );
   /* Writes to disk one run extracted from the EEG dataset, comprising
     frames frames {vru[0..nt-1][0..nc-1]}.
     
-    The output file will be called "{outDir}/s{SUBJ}/r{RUN}.txt", where
-    {SUBJ} is the three-digit value of {h.orig.subject}, and {RUN} is
-    the four-digit value of {h.orig.run}. The directory "{outDir}/s{SUBJ}/" must exist.
+    The output file will be called "{outDir}/s{SSS}/r{RRRRR}.txt", where
+    {SSS} is the three-digit value of {hot.subject}, and {RRRRR} is
+    the five-digit value of {hot.run}, both zero-padded. The directory
+    "{outDir}/s{SSS}/" must exist.
     
-    The procedure sets {h.nt=nt} and {h.nc=nc}, and assumes that the client has
-    defined all other fields of {h} properly, including {h.ne}, {h.type},
-    {h.chname[0..nc-1]}, {h.orig.it_ini}, {h.orig.it_fin},
-    {h.orig.run}, and {h.orig.subject}.
+    The procedure sets {hot.nt=nt} and {hot.nc=nc}, and assumes that the client has
+    defined all other fields of {hot} properly, including {hot.ne}, {hot.type}, {hot.subject}, {hot.run}, 
+    {hot.chname[0..nc-1]}, {hot.orig.it_ini}, {hot.orig.it_fin},
+    and {hot.orig.subject}. The value of {hot.orig.run} must be {INT32_MIN}. 
     
     The procedure then uses {neuromat_eeg_header_write} to write the
-    non-null information from {h}, then calls {neuromat_eeg_data_write}
+    non-null information from {hot}, then calls {neuromat_eeg_data_write}
     to write the data. */
 
-void nes_print_run_info(FILE *wr, char *class, neuromat_eeg_header_t *h);
+void nes_print_run_info(FILE *wr, char *class, neuromat_eeg_header_t *hot);
   /* Prints to {wr} a one-line summary for one experiment run. Assumes that the run has the
-    given {h.type} and spans from frame {h.orig.it_ini} to frame {h.orig.it_fin} of the
+    given {hot.type} and spans from frame {hot.orig.it_ini} to frame {hot.orig.it_fin} of the
     original data file. The string {class} is printed in the summary.
-    The sampling frequency {h.fsmp} is used to convert frame indices into
+    The sampling frequency {hot.fsmp} is used to convert frame indices into
     time coordinates. */
 
 void nes_print_run_phases
@@ -524,7 +525,7 @@ int main(int argc, char **argv)
     /* Read the file header: */
     neuromat_eeg_header_t *hin = nes_read_header(stdin, &nl);
 
-    fprintf(stderr, "output files are named \"%s/s%03d/r{BBB}{NN}.txt\"\n", o->outDir, hin->orig->subject);
+    fprintf(stderr, "output files are named \"%s/s%03d/r{BBB}{NN}.txt\"\n", o->outDir, hin->subject);
 
     int nc_in = hin->nc; /* Total count of data channels (incl. vref, triggers). */
     int ne = hin->ne; /* Count of electrode channels (incl. vref). */
@@ -539,7 +540,7 @@ int main(int argc, char **argv)
     assert(nc_out <= nc_in);
     
     /* Some data for the benefit of scripts that parse the {stderr} output: */
-    fprintf(stderr, "subject = %03d\n", hin->orig->subject);
+    fprintf(stderr, "subject = %03d\n", hin->subject);
     fprintf(stderr, "nc_in = %d\n", nc_in);
     fprintf(stderr, "nc_out = %d\n", nc_out);
     fprintf(stderr, "ne = %d\n", ne);
@@ -682,11 +683,16 @@ int main(int argc, char **argv)
         nes_adjust_electrode_averages_in_run(nt_run, nc_out, vru, ic_fx_out, ic_st_out, ne, show_avg);
 
         /* Write run to disk: */
-        hot->orig->run = idBlockRun;
+        hot->subject = hin->subject;
+        hot->run = idBlockRun;
         hot->type = run_type;
         hot->nc = nc_out;
+        
         hot->orig->it_ini = it_cp_ini;
         hot->orig->it_fin = it_cp_fin;
+        hot->orig->subject = hin->subject;
+        hot->orig->run = INT32_MIN;
+        
         nes_output_run(nt_run, nc_out, vru, o->outDir, hot);
         
         if (debug) { fprintf(stderr, "done run %05d\n", idBlockRun); }
@@ -1189,7 +1195,7 @@ neuromat_eeg_header_t *nes_read_header(FILE *rd, int *nlP)
     neuromat_eeg_header_t *h = neuromat_eeg_header_read(stdin, 128, 500, nlP);
 
     fprintf(stderr, "original file name = \"%s\"\n", h->orig->file);
-    fprintf(stderr, "subject ID = %03d\n", h->orig->subject);
+    fprintf(stderr, "subject ID = %03d\n", h->subject);
     fprintf(stderr, "sampling frequency = %.10g\n", h->fsmp);
 
     fprintf(stderr, "expects %d data frames\n", h->nt);
@@ -1232,17 +1238,17 @@ void nes_print_run_phases
     fprintf(wr, "\n");
   }
 
-void nes_print_run_info(FILE *wr, char *class, neuromat_eeg_header_t *h)
+void nes_print_run_info(FILE *wr, char *class, neuromat_eeg_header_t *hot)
   { 
-    int it_ini = h->orig->it_ini;
-    int it_fin = h->orig->it_fin; 
-    double fsmp = h->fsmp;
+    int it_ini = hot->orig->it_ini;
+    int it_fin = hot->orig->it_fin; 
+    double fsmp = hot->fsmp;
 
     int nt = it_fin - it_ini + 1; /* Number of data frames in run. */
     double ts_ini_g = (it_ini - 0.5)/fsmp; /* Start time of run (seconds) from start of orig file. */
     double ts_fin_g = (it_fin + 0.5)/fsmp; /* End time of run (seconds) from start of orig file. */
 
-    fprintf(wr, "subject %3d run %3d type %-8s (%s)", h->orig->subject, h->orig->run, h->type, class);
+    fprintf(wr, "subject %3d run %5d type %-8s (%s)", hot->subject, hot->run, hot->type, class);
     fprintf(wr, " - %8d samples ( %10.4f s )", nt, nt/fsmp);
     fprintf(wr, " %8d .. %8d", it_ini, it_fin);
     fprintf(wr, " ( %10.4f _ %10.4f s )\n", ts_ini_g, ts_fin_g);
@@ -1253,49 +1259,51 @@ void nes_output_run
     int nc,
     double **vru,
     char *outDir,
-    neuromat_eeg_header_t *h
+    neuromat_eeg_header_t *hot
   )
   {
     /* Set {nc,nt} in header: */
     assert(nt > 0);
     assert(nc > 0);
-    h->nt = nt;
-    h->nc = nc;
+    hot->nt = nt;
+    hot->nc = nc;
 
     /* Check header data for this run: */
-    assert((!isnan(h->fsmp)) && (h->fsmp == h->orig->fsmp)); /* Data is assumed to be unfiltered. */
-    assert((h->ne > 0) && (h->ne <= h->nc-2)); /* There are at least two marker channels. */
-    assert(h->type != NULL);
-    assert(h->chname != NULL);
-    assert(h->component == NULL);
-    assert(h->kfmax == INT_MIN); /* The {kfmax} is irrelevant for time-domain data.  */
-    assert(isnan(h->flo0));
-    assert(isnan(h->flo1));
-    assert(isnan(h->fhi1));
-    assert(isnan(h->fhi0));
-    assert(h->finvert == INT_MIN);
+    assert((!isnan(hot->fsmp)) && (hot->fsmp == hot->orig->fsmp)); /* Data is assumed to be unfiltered. */
+    assert((hot->ne > 0) && (hot->ne <= hot->nc-2)); /* There are at least two marker channels. */
+    assert(hot->type != NULL);
+    assert((hot->subject > 0) && (hot->subject <= nes_MAX_SUBJECT));
+    assert((hot->run > 0) && (hot->run <= nes_MAX_BLOCK_AND_RUN));
+    assert(hot->chname != NULL);
+    assert(hot->component == NULL);
+    assert(hot->kfmax == INT_MIN); /* The {kfmax} is irrelevant for time-domain data.  */
+    assert(isnan(hot->flo0));
+    assert(isnan(hot->flo1));
+    assert(isnan(hot->fhi1));
+    assert(isnan(hot->fhi0));
+    assert(hot->finvert == INT_MIN);
     
     /* Check header data re original file (note: mirroring allows out-of-range indices): */
-    assert((h->orig->file != NULL) && (strlen(h->orig->file) > 0));
-    assert(h->orig->nt > 0);
-    if ((h->orig->it_ini < 0) || (h->orig->it_fin >= h->orig->nt))
-      { fprintf(stderr, "!! warning: run frame range %d..%d", h->orig->it_ini, h->orig->it_fin);
-        fprintf(stderr, " extends outside raw file range %d..%d\n", 0, h->orig->nt - 1);
+    assert((hot->orig->file != NULL) && (strlen(hot->orig->file) > 0));
+    assert(hot->orig->nt > 0);
+    if ((hot->orig->it_ini < 0) || (hot->orig->it_fin >= hot->orig->nt))
+      { fprintf(stderr, "!! warning: run frame range %d..%d", hot->orig->it_ini, hot->orig->it_fin);
+        fprintf(stderr, " extends outside raw file range %d..%d\n", 0, hot->orig->nt - 1);
       }
-    assert(h->orig->it_ini <= h->orig->it_fin);
-    assert((!isnan(h->orig->fsmp)) && (h->orig->fsmp > 0));
-    assert((h->orig->subject > 0) && (h->orig->subject <= nes_MAX_SUBJECT));
-    assert((h->orig->run > 0) && (h->orig->run <= nes_MAX_BLOCK_AND_RUN));
+    assert(hot->orig->it_ini <= hot->orig->it_fin);
+    assert((!isnan(hot->orig->fsmp)) && (hot->orig->fsmp > 0));
+    assert(hot->orig->subject == hot->subject);
+    assert(hot->orig->run == INT32_MIN);
     
-    nes_print_run_info(stderr, "extracted", h);
+    nes_print_run_info(stderr, "extracted", hot);
     
     char *fname = NULL;
-    asprintf(&fname, "%s/s%03d/r%05d.txt", outDir, h->orig->subject, h->orig->run);
+    asprintf(&fname, "%s/s%03d/r%05d.txt", outDir, hot->subject, hot->run);
     FILE *wr = open_write(fname, TRUE);
     
-    neuromat_eeg_header_write(wr, h);
+    neuromat_eeg_header_write(wr, hot);
     
-    neuromat_eeg_data_write(wr, nt, nc, vru, 0, nt - 1, 1);
+    neuromat_eeg_data_write(wr, nt, nc, vru, "%14.8e", 0, nt - 1, 1);
     fclose(wr);
     free(fname);
   }

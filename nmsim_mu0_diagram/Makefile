@@ -1,6 +1,6 @@
-# Last edited on 2017-09-19 16:08:08 by jstolfi
+# Last edited on 2023-12-08 05:29:26 by stolfi
 
-PROG = nmeeg_spectrum
+PROG = nmsim_mu0_diagram
 
 JS_LIBS := \
   libneuro.a \

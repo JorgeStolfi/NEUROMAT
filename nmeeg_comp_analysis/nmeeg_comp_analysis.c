@@ -4,7 +4,7 @@
 
 #define nmeeg_comp_analysis_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
-/* Last edited on 2023-10-23 15:37:13 by stolfi */
+/* Last edited on 2023-12-05 23:38:11 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -535,7 +535,7 @@ void nca_write_eeg_dataset(FILE *wr, int32_t nt, int32_t nc, double **val, neuro
     for (int32_t ic = 0; ic < nc; ic++)
       { fprintf(stderr, "channel [%3d] = \"%s\"\n", ic, h->chname[ic]); }
     neuromat_eeg_header_write(wr, h);
-    neuromat_eeg_data_write(wr, nt, nc, val, 0, nt-1, 1);
+    neuromat_eeg_data_write(wr, nt, nc, val, "%14.8e", 0, nt-1, 1);
     fflush(wr);
   }
 

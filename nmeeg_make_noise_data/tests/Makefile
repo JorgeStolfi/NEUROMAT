@@ -1,4 +1,4 @@
-# Last edited on 2021-08-30 18:20:51 by stolfi
+# Last edited on 2023-11-29 11:23:40 by stolfi
 
 PROG := nmeeg_make_noise_data.gawk
 PROGDIR := ..
@@ -41,9 +41,10 @@ do-single-test: ${PROGDIR}/${PROG}
 	nmeeg_plot_channels.sh \
           SHOW \
           ${OUT_PREFIX} 0 \
-          41 0 -1 \
+          41 \
+          0 9999 \
           0 0 \
-          500
+          1400 500
 
 # ======================================================================
 endif

@@ -1,4 +1,4 @@
-# Last edited on 2019-10-19 03:05:06 by jstolfi
+# Last edited on 2023-12-08 08:39:52 by stolfi
 
 
 PROG := makefigs
@@ -11,8 +11,8 @@ OUTPREFIX := out/GL
 all: do-test
 
 do-test: do-clean ${PROGDIR}/${PROG}
-	nice ${PROGDIR}/${PROG} -outName ${OUTPREFIX}
-	atril ${OUTPREFIX}-*.eps
+	nice ${PROGDIR}/${PROG} -scale 10.0 -outName ${OUTPREFIX}
+	atril ${OUTPREFIX}_*.eps
 
 do-clean:
 	rm -f ${OUTPREFIX}-*.eps

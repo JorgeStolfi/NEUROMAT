@@ -1,5 +1,5 @@
 /* Tools for generating figures for IA/AA papers. */
-/* Last edited on 2019-10-19 02:57:51 by jstolfi */
+/* Last edited on 2023-12-08 08:20:45 by stolfi */
 
 #ifndef figtools_H
 #define figtools_H
@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <values.h>
 
-#include <pswr.h>
+#include <epswr.h>
 #include <frgb.h>
 #include <interval.h>
 
@@ -16,35 +16,32 @@
   /* Infinity in double format. */
 #endif
 
-#define mm (72.27/25.4)
-
 /* General plot options: */
-typedef struct PlotOptions
+typedef struct figtools_options_t
   { char *outName;    /* Prefix for output file names. */
     bool_t color;     /* TRUE uses colors, FALSE uses only grays. */
     double scale;     /* Figure scale factor (client to mm). */
     double margin[2]; /* X and Y extra margin (in mm). */
-  } PlotOptions;
+  } figtools_options_t;
 
-PSStream *start_figure
-  ( PlotOptions *o,
+epswr_figure_t *figtools_start_figure
+  ( figtools_options_t *o,
     char *figTag,
-    interval_t bbox[2],    /* Client plot window. */
-    double scale            /* Plot scale (mm per client unit). */
+    interval_t bbox[2]      /* Client plot window (client units). */
   );
   /* Opens a new Encapsulated Postscript file, with name 
     "{o->outName}-{figTag}.eps", and initializes it.
-    Returns the {PSStream}.
+    Returns the {epswr_figure_t}.
     
     The nominal client plot window is {bbox}, plus a 
     safety margin {o->margin}. */
 
-void finish_figure(PSStream *ps, PlotOptions *o);
-  /* Finalizes the current figure written to file {ps}.
+void figtools_finish_figure(epswr_figure_t *eps, figtools_options_t *o);
+  /* Finalizes the current figure written to file {eps}.
     Closes the file and returns NULL.
     Otherwise simply terminates the current page. */
 
-void hatch_rectangle(PSStream *ps, interval_t B[], double hstep);
+void figtools_hatch_rectangle(epswr_figure_t *eps, interval_t B[], double hstep);
   /* Draws hatch-lines across the cell {B}, spaced {hstep} in client
     units, with the current pen. */
 

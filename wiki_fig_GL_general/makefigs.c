@@ -4,7 +4,7 @@
 
 /* Copyright © 2004 by the State University of Campinas (UNICAMP). */
 /* See the copyright, authorship, and warranty notice at end of file. */
-/* Last edited on 2019-10-19 06:23:28 by jstolfi */
+/* Last edited on 2023-12-08 10:38:53 by stolfi */
 
 /* Created may/2004 by Jorge Stolfi, UNICAMP */
 
@@ -15,17 +15,17 @@
 #include <values.h>
 #include <assert.h>
 
-#include <pswr.h>
+#include <epswr.h>
 #include <figtools.h>
 
 /* INTERNAL PROTOTYPES */
 
 int main(int argc, char **argv);
 
-void bitstreams(PlotOptions *o);
+void bitstreams(figtools_options_t *o);
   /* Write the streams of bits figure. */
 
-PlotOptions *parse_options(int argc, char **argv);
+figtools_options_t *parse_options(int argc, char **argv);
 void get_arg_double(double *varp, int *argnp, int argc, char **argv, char *usage);
 void get_arg_string(char **varp, int *argnp, int argc, char **argv, char *usage);
 void arg_error(char *msg, char *arg, char *pname, char *usage);
@@ -35,7 +35,7 @@ void arg_error(char *msg, char *arg, char *pname, char *usage);
 int main(int argc, char **argv)
   {   
     fprintf(stderr, "Parsing options ...\n");
-    PlotOptions *o = parse_options(argc, argv);
+    figtools_options_t *o = parse_options(argc, argv);
     
     fprintf(stderr, "Plotting figure {bitstreams} ...\n");
     bitstreams(o);
@@ -44,27 +44,33 @@ int main(int argc, char **argv)
     return 0;
   }
 
-void bitstreams(PlotOptions *o)
+void bitstreams(figtools_options_t *o)
   {
+    
+    int32_t rows =  7; /* Neurons. */
+    int32_t cols = 18; /* Times. */
+
+    double dx = 4.0; /* Client units. */
+    double dy = 3.5; /* Client units. */
+
+    double pw = 0.2; /* Pen width (client units). */
+
+    auto void stateframe(double x, double y, frgb_t *color, double mrg);
+      /* Draws the frame for the symbol box at {x,y), with color {color},
+        expanded by {mrg} on both axes. */
     
     auto void predframe(int32_t iN, int32_t tN, frgb_t *color, double dxy);
       /* Draws the frame for neuron {iN} that last fired
         at time {tN}, with color {color}, displaced by {dxy}
         on both axes. */
     
-    int32_t rows =  7; /* Neurons. */
-    int32_t cols = 18; /* Times. */
-
-    double dx = 4.0 * mm;
-    double dy = 3.5 * mm;
-
     interval_t bbox[2];
-    bbox[0] = (interval_t){{ -2.0*dx, +(cols + 1.0)*dx }};
+    bbox[0] = (interval_t){{ -4.0*dx, +(cols + 1.0)*dx }};
     bbox[1] = (interval_t){{ -1.2*dy, +(rows + 0.3)*dy }};
     
     char *ftag = "bitstreams";
     fprintf(stderr, "  Creating %s-%s.eps ...\n", o->outName, ftag);
-    PSStream *ps = start_figure(o, ftag, bbox, 1.0);
+    epswr_figure_t *eps = figtools_start_figure(o, ftag, bbox);
     
     /* Choose the neurons to show and their last firing times:*/
     int32_t iA = 1; int32_t tA = cols-6;
@@ -98,44 +104,45 @@ void bitstreams(PlotOptions *o)
     for (int32_t i = 0; i < rows; i++)
       { /* Write a row of 0's and 1's. */
         double y = i*dy;
-        for (int32_t t = -1; t <= cols; t++)
+        for (int32_t t = -3; t <= cols; t++)
           { double x = t*dx;
             
             /* Select what symbol to show, or none, and its font: */
+            double fontSize = dy*3.1*o->scale;
             char *font = "Courier";
             char *dig = NULL;
             if (t < 0) 
-              { dig = "..."; }
+              { dig = "."; }
             else if ((t >= 0) && (t < cols)) 
               { int32_t k = i*cols + t;
                 dig = "0";
                 if (X[k] != 0) { dig = "1"; font = "CourierBold"; }
               }
-            pswr_set_label_font(ps, font, 18.0);
+            epswr_set_label_font(eps, font, fontSize);
               
             /* Decide the symbol's color and whether to draw a box around it: */
-            bool_t box = (t == cols); /* Should draw the digit box? */
             frgb_t color = colorN;
-            double pw = 0.3; /* Pen width. */
-            if ((i == iA) && ((t == tA) || (t == cols))) 
-              { color = colorA; box = TRUE; pw = 0.7; }
-            if ((i == iB) && ((t == tB) || (t == cols)))
-              { color = colorB; box = TRUE; pw = 0.7; }
+            double boxmrg = NAN; /* Margin for box, or {NAN} if no box. */
+            if (t == cols)
+              { if (i == iA) { color = colorA; }
+                if (i == iB) { color = colorB; }
+                boxmrg = 0.0;
+              }
+            else if ((i == iA) && (t == tA)) 
+              { color = colorA;
+                boxmrg = 0.0;
+              }
+            else if ((i == iB) && (t == tB))
+              { color = colorB;
+                boxmrg = 0.0;
+              }
+              
+            if (! isnan(boxmrg)) { stateframe(x, y, &color, 0.0); }
             
-            pswr_set_pen(ps, color.c[0], color.c[1], color.c[2], pw,  0.0,0.0);
-            pswr_set_fill_color(ps, color.c[0], color.c[1], color.c[2]);
             if (dig != NULL)
               { /* Draw the symbol: */
-                pswr_fill_draw_label(ps, dig, x, y, 0.0, 0.5, 0.5, TRUE, FALSE);
-              }
-            if (box)
-              { /* Draw the box around the symbol: */
-                /* Coordinates of sides of digit box: */
-                double xblo = x - 0.3*dx;
-                double xbhi = x + 0.3*dx;
-                double yblo = y - 0.4*dy;
-                double ybhi = y + 0.4*dy;
-                pswr_rectangle(ps, xblo,xbhi, yblo,ybhi, FALSE, TRUE);
+                epswr_set_fill_color(eps, color.c[0], color.c[1], color.c[2]);
+                epswr_label(eps, dig, dig, x,y, 0.0, TRUE, 0.5,0.5, TRUE, FALSE);
               }
             x = x + dx;
           }
@@ -145,33 +152,45 @@ void bitstreams(PlotOptions *o)
     predframe(iA, tA, &colorA, -1.0);
     predframe(iB, tB, &colorB, +1.0);
     
-    // pswr_rectangle(ps, 
+    // epswr_rectangle(eps, 
     //   LO(cell[0]), HI(cell[0]), 
     //   LO(cell[1]), HI(cell[1]), 
     //   TRUE, TRUE
     // );
     
     fprintf(stderr, "  Finishing the figure ...\n");
-    finish_figure(ps, o);
+    figtools_finish_figure(eps, o);
     
     return;
     
     /* INTERNAL IMPLEMENTATIONS */
     
+    void stateframe(double x, double y, frgb_t *color, double boxmrg)
+      { /* Draw the box around the symbol: */
+        /* Coordinates of sides of digit box: */
+        double xblo = x - 0.30*dx - boxmrg;
+        double xbhi = x + 0.30*dx + boxmrg;
+        double yblo = y - 0.40*dy - boxmrg;
+        double ybhi = y + 0.40*dy + boxmrg;
+        epswr_set_pen(eps, color->c[0], color->c[1], color->c[2], pw*o->scale,  0.0,0.0);
+        epswr_set_fill_color(eps, color->c[0], color->c[1], color->c[2]);
+        epswr_rectangle(eps, xblo,xbhi, yblo,ybhi, FALSE, TRUE);
+      }
+
     void predframe(int32_t iN, int32_t tN, frgb_t *color, double dxy)
       { 
         /* Coordinates of frame sides: */
-        double xlo = (tN - 0.3)*dx;
-        double xhi = (cols - 0.7)*dx + dxy;
+        double xlo = (tN - 0.5)*dx;
+        double xhi = (cols - 0.5)*dx + 0.3*dxy;
         
-        double ylo = (0 - 0.5)*dy + 0.7*dxy;
-        double yhi = (rows - 0.5)*dy + 0.7*dxy;
+        double ylo = (0 - 0.7)*dy + 0.3*dxy;
+        double yhi = (rows - 0.3)*dy + 0.3*dxy;
         
-        double pw = 0.7; /* Pen width. */
+        double pw = 0.2; /* Pen width. */
         
-        pswr_set_pen(ps, color->c[0],color->c[1],color->c[2], pw,  0.0,0.0);
-        pswr_set_fill_color(ps, color->c[0],color->c[1],color->c[2]);
-        pswr_rectangle(ps, xlo, xhi, ylo, yhi, FALSE, TRUE);
+        epswr_set_pen(eps, color->c[0],color->c[1],color->c[2], pw*o->scale,  0.0,0.0);
+        epswr_set_fill_color(eps, color->c[0],color->c[1],color->c[2]);
+        epswr_rectangle(eps, xlo, xhi, ylo, yhi, FALSE, TRUE);
         
         /* Coordinates of arrow: */
         double xa = xhi;
@@ -179,8 +198,8 @@ void bitstreams(PlotOptions *o)
         
         double xb = (cols + 0.0)*dx;
         double yb = ya;
-        pswr_segment(ps, xa,ya, xb,yb);
-        pswr_arrowhead(ps, xa,ya, xb,yb, 2.0, 4.7, 1.0, TRUE, TRUE);
+        epswr_segment(eps, xa,ya, xb,yb);
+        epswr_arrowhead(eps, xa,ya, xb,yb, 3.5, 5.5, 1.0, TRUE, TRUE);
       }
   }
   
@@ -189,10 +208,10 @@ void bitstreams(PlotOptions *o)
 #define GET_STRING(Var) get_arg_string(&(Var), &argn, argc, argv, usage)
 #define GET_DOUBLE(Var) get_arg_double(&(Var), &argn, argc, argv, usage)
 
-PlotOptions *parse_options(int argc, char **argv)
+figtools_options_t *parse_options(int argc, char **argv)
   {
-    PlotOptions *o = (PlotOptions *)malloc(sizeof(PlotOptions));
-    char* usage = "\n  [ -help ] [ -outName PREFIX ] [ -eps | -ps ]";
+    figtools_options_t *o = (figtools_options_t *)malloc(sizeof(figtools_options_t));
+    char* usage = "\n  [ -help ] [ -outName PREFIX ] [ -eps | -eps ]";
     int argn;
 
     /* Defaults: */

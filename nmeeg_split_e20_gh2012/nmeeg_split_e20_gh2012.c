@@ -5,7 +5,7 @@
 #define nmeeg_split_e20_gh2012_C_COPYRIGHT \
   "Copyright © 2013 by the State University of Campinas (UNICAMP)"
 
-/* Last edited on 2023-10-21 21:49:09 by stolfi */
+/* Last edited on 2023-12-05 23:00:21 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -248,7 +248,8 @@ void nes_write_eeg_run
   /* Writes an extracted segment of the eeg signal array
     {vru[0..nt-1][0..nc-1]}, comprising {nc} channels sampled at {nt}
     times, to the file
-    "{outDir}/s{h->orig->subject}_r{h->orig->run}.txt". The segment is
+    "{outDir}/s{SSS}_r{RRR}.txt" where {SSS} is {h->subject}, 
+    and {RRR} is {h->run}, both zero-padded to 3 digits. The segment is
     assumed to span the data frames of the original dataset {val} with indices
     {h->orig->it_ini} to {h->orig->it_fin}, inclusive.
     
@@ -361,16 +362,18 @@ int main(int argc, char **argv)
       }
     
     /* Create a header record with fields common to all runs: */
-    neuromat_eeg_header_t *h = neuromat_eeg_header_new(); /* Header for run files. */
-    h->orig->file = txtcat(o->source, "");
-    h->orig->nt = nt;
-    h->orig->fsmp = fsmp;
-    h->orig->subject = o->subject;
+    neuromat_eeg_header_t *hot = neuromat_eeg_header_new(); /* Header for run files. */
+    hot->orig->file = txtcat(o->source, "");
+    hot->orig->nt = nt;
+    hot->orig->fsmp = fsmp;
+    hot->orig->subject = o->subject;
+    hot->orig->run = INT32_MIN;
     
-    h->nc = nc_out;
-    h->ne = ne;
-    h->chname = chname_out;
-    h->fsmp = fsmp;
+    hot->nc = nc_out;
+    hot->ne = ne;
+    hot->chname = chname_out;
+    hot->subject = o->subject;
+    hot->fsmp = fsmp;
     
     /* Write expanded runs: */
     int ir;
@@ -446,15 +449,15 @@ int main(int argc, char **argv)
           }
         
         /* Set the header fields specific to this run: */ 
-        h->orig->run = o->firstRun + ir;
-        h->orig->it_ini = it_ini;
-        h->orig->it_fin = it_fin;
+        hot->orig->it_ini = it_ini;
+        hot->orig->it_fin = it_fin;
         
-        h->type = run_type;
-        h->nt = nt_run;
+        hot->run = o->firstRun + ir;
+        hot->type = run_type;
+        hot->nt = nt_run;
 
         /* Write the selected frames: */ 
-        nes_write_eeg_run(o->outDir, h, nt_run, nc_out, vru, np_run, it_p_ini, it_p_fin);
+        nes_write_eeg_run(o->outDir, hot, nt_run, nc_out, vru, np_run, it_p_ini, it_p_fin);
         
         /* Release the storage: */ 
         for (kt = 0; kt < nt_run; kt++) { free(vru[kt]); } 
@@ -493,25 +496,31 @@ void nes_print_run_info(FILE *wr, char *class, int subject, int ir, char *type, 
     fprintf(wr, " ( %10.4f _ %10.4f s )\n", ts_ini_g, ts_fin_g);
   }
     
-void nes_write_eeg_run(char *outDir, neuromat_eeg_header_t *h, int nt, int nc, double **vru, int np, int it_p_ini[], int it_p_fin[])
+void nes_write_eeg_run(char *outDir, neuromat_eeg_header_t *hot, int nt, int nc, double **vru, int np, int it_p_ini[], int it_p_fin[])
   {
-    int it_ini = h->orig->it_ini;
-    int it_fin = h->orig->it_fin; 
-    demand((0 <= it_ini) && (it_ini <= it_fin) && (it_fin < h->orig->nt), "invalid frame index range");
-    demand(h->nt == nt, "inconsistent {nt} in header");
-    demand(h->nc == nc, "inconsistent {nc} in header");
-    demand((0 <= h->ne) && (h->ne <= nc), "invalid {ne} in header");
+    int it_ini = hot->orig->it_ini;
+    int it_fin = hot->orig->it_fin; 
+    demand((0 <= it_ini) && (it_ini <= it_fin) && (it_fin < hot->orig->nt), "invalid frame index range");
+    demand(hot->nt == nt, "inconsistent {nt} in header");
+    demand(hot->nc == nc, "inconsistent {nc} in header");
+    demand((0 <= hot->ne) && (hot->ne <= nc), "invalid {ne} in header");
+    demand((hot->subject > 0) && (hot->subject < INT32_MIN), "invalid {subject} in header");
+    demand((hot->run > 0) && (hot->run < INT32_MIN), "invalid {run} in header");
+    if (hot->orig != NULL)
+      { demand(hot->orig->subject == hot->subject, "inconsistent {subject} in header's {.orig}");
+        demand(hot->orig->run == INT32_MIN, "invalid {run} in header's {.orig}");
+      }
     
     /* Currently we do not downsample, so: */
-    demand((! isnan(h->fsmp)) && (h->fsmp == h->orig->fsmp), "inconsistent sampling freqs");
+    demand((! isnan(hot->fsmp)) && (hot->fsmp == hot->orig->fsmp), "inconsistent sampling freqs");
     
     char *fname = NULL;
-    asprintf(&fname, "%s/s%03d_r%03d.txt", outDir, h->orig->subject, h->orig->run);
+    asprintf(&fname, "%s/s%03d_r%03d.txt", outDir, hot->subject, hot->run);
     FILE *wr = open_write(fname, TRUE);
     
-    neuromat_eeg_header_write(wr, h);
+    neuromat_eeg_header_write(wr, hot);
     
-    neuromat_eeg_data_write(wr, nt, nc, vru, 0, nt - 1, 1);
+    neuromat_eeg_data_write(wr, nt, nc, vru, "%14.8e", 0, nt - 1, 1);
     fclose(wr);
     free(fname);
   }

@@ -1,11 +1,11 @@
 #! /bin/bash
-# Last edited on 2021-09-02 20:53:00 by stolfi
+# Last edited on 2023-11-04 09:20:01 by stolfi
 
 # Plots a scattergram of two selected channels from an EEG recording file.
 
 show=$1; shift             # "SHOW" or "NOSHOW".
 inFile="$1"; shift         # Input EEG file.
-step="$(( 10#$1 ))"; shift # Plot only one evry this many frames.
+step="$(echo "$1" | sed -e 's:^0*\([0-9]\):\1:')"; shift # Plot only one evry this many frames.
 xname="$1"; shift          # Name of channel to plot on X axis.
 xmax="$1"; shift           # Max X axis value, for plot.
 yname="$1"; shift          # Name of channel to plot on Y axis.

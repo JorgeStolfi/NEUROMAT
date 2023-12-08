@@ -5,7 +5,7 @@
 #define nmeeg_split_e19_av2020_C_COPYRIGHT \
   "Copyright © 2020 by the State University of Campinas (UNICAMP)"
 
-/* Last edited on 2017-10-18 13:14:40 by jstolfi */
+/* Last edited on 2023-11-02 06:29:52 by stolfi */
 
 #define PROG_HELP \
   "  " PROG_NAME " \\\n" \
@@ -612,30 +612,32 @@ void nes_header_write
     
     int ncw = (ic_syn >= 0 ? nc : nc-1); /* Number of channels in output file. */
     
-    neuromat_eeg_header_t *h = neuromat_eeg_header_new();
-    h->nt = ns_file;
-    h->nc = 0;  /* To be updated below. */
-    h->ne = 0;  /* To be updated below. */
-    h->fsmp = fsmp/it_step;
-    h->type = type;
+    neuromat_eeg_header_t *hot = neuromat_eeg_header_new();
+    hot->nt = ns_file;
+    hot->nc = 0;  /* To be updated below. */
+    hot->ne = 0;  /* To be updated below. */
+    hot->fsmp = fsmp/it_step;
+    hot->type = type;
+    hot->subject = subject;
     
-    h->orig = neuromat_eeg_source_new();
-    h->orig->nt = nt;
-    h->orig->it_ini = it_ini;
-    h->orig->it_fin = it_fin;
-    h->orig->fsmp = fsmp;
-    h->orig->subject = subject;
+    hot->orig = neuromat_eeg_source_new();
+    hot->orig->nt = nt;
+    hot->orig->it_ini = it_ini;
+    hot->orig->it_fin = it_fin;
+    hot->orig->fsmp = fsmp;
+    hot->orig->subject = subject;
+    hot->orig->run = INT32_MIN; /* All runs. */
     
     assert(ne == 19);
     char *ename[] = { "Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4", "O1", "O2", "F7", "F8", "T3", "T4", "T5", "T6", "Fz", "Cz", "Pz" }; 
     int32_t res;
-    for (int32_t ie = 0; ie < ne; ie++) { res = neuromat_eeg_header_append_electrode_channel(h, ename[ie]); assert (res == ie); }
-    if (ic_syn >= 0) { res = neuromat_eeg_header_append_electrode_channel(h, "SYN"); assert(res == ic_syn); }
-    res = neuromat_eeg_header_append_marker_channel(h, "SBS"); assert(res == ncw - 1);
+    for (int32_t ie = 0; ie < ne; ie++) { res = neuromat_eeg_header_append_electrode_channel(hot, ename[ie]); assert (res == ie); }
+    if (ic_syn >= 0) { res = neuromat_eeg_header_append_electrode_channel(hot, "SYN"); assert(res == ic_syn); }
+    res = neuromat_eeg_header_append_marker_channel(hot, "SBS"); assert(res == ncw - 1);
 
     fprintf(stderr, "writing header...\n");
-    neuromat_eeg_header_write(wr, h);
-    /* neuromat_eeg_header_free(h); */
+    neuromat_eeg_header_write(wr, hot);
+    /* neuromat_eeg_header_free(hot); */
   }
 
 double *nes_make_filter(int32_t nt, double fsmp)
